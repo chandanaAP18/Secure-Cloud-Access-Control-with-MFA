@@ -48,6 +48,11 @@ This project implements the PBL topic from the PDF using Django, HTML/CSS/JavaSc
 - Pytest:
   `pytest`
 
+## Git workflow
+
+- Use feature branches for changes instead of committing directly to `main`.
+- Open a pull request so updates can be reviewed before merging.
+
 ## Scaling guidance for 1000 concurrent users
 
 - Deploy behind Nginx with multiple Gunicorn/Uvicorn workers on Linux.
