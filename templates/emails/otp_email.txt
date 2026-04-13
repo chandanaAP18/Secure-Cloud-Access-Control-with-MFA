@@ -1,0 +1,11 @@
+Your {{ app_name }} verification code
+
+Hello{% if user.first_name %} {{ user.first_name }}{% endif %},
+
+Use this one-time password to complete your sign in:
+
+{{ code }}
+
+This code will expire in {{ expiry_minutes }} minute{% if expiry_minutes != 1 %}s{% endif %}.
+
+If you did not try to sign in, you can ignore this email.

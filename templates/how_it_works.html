@@ -1,0 +1,61 @@
+{% extends "base.html" %}
+
+{% block title %}How It Works{% endblock %}
+{% block body_class %}page-process{% endblock %}
+
+{% block content %}
+<section class="page-hero process-hero" id="journey">
+    <div>
+        <p class="eyebrow">How It Works</p>
+        <h2>A complete MFA and access-control workflow.</h2>
+        <p>Each sign-in uses the registered email as identity, then moves through the website password and every configured factor before access is granted.</p>
+    </div>
+    <div class="process-orbit">
+        <div class="orbit-node">Password</div>
+        <div class="orbit-node">Email OTP</div>
+        <div class="orbit-node">Question</div>
+        <div class="orbit-node">PIN</div>
+    </div>
+</section>
+
+<section class="timeline">
+    <article class="card">
+        <span class="step-badge">1</span>
+        <h3>Email and website password</h3>
+        <p>The user enters their registered email and the password created for this website. It is not the email account password.</p>
+    </article>
+    <article class="card">
+        <span class="step-badge">2</span>
+        <h3>Email OTP delivery</h3>
+        <p>A one-time code is generated, hashed for storage, and sent to the user's email through SMTP.</p>
+    </article>
+    <article class="card">
+        <span class="step-badge">3</span>
+        <h3>Phone OTP, CAPTCHA, and image check</h3>
+        <p>After email OTP, the flow continues through phone OTP, a generated CAPTCHA, and an image-selection challenge to add bot resistance and visual confirmation.</p>
+    </article>
+    <article class="card">
+        <span class="step-badge">4</span>
+        <h3>PIN and final routing</h3>
+        <p>The user completes a PIN check, then is routed to the correct role-based dashboard with activity already logged.</p>
+    </article>
+</section>
+
+<section class="feature-split">
+    <article class="card">
+        <p class="eyebrow">System Outcome</p>
+        <h3>Secure flow, visible stages, fewer blind spots.</h3>
+        <p>
+            The sequence reduces unauthorized access while giving administrators a record of events and users a clear,
+            guided path through verification.
+        </p>
+    </article>
+    <article class="card process-board">
+        <div class="process-line"></div>
+        <div class="process-point">Login</div>
+        <div class="process-point">OTP Chain</div>
+        <div class="process-point">Question</div>
+        <div class="process-point">Dashboard</div>
+    </article>
+</section>
+{% endblock %}

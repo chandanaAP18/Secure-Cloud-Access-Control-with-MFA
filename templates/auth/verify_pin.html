@@ -1,0 +1,15 @@
+{% extends "base.html" %}
+
+{% block title %}Verify PIN{% endblock %}
+
+{% block content %}
+<section class="card auth-card">
+    <h2>Verify with PIN</h2>
+    <p>Enter the 4 to 8 digit PIN you created during registration.</p>
+    <form method="post" class="form-grid">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <button type="submit" class="button primary">Verify PIN</button>
+    </form>
+</section>
+{% endblock %}

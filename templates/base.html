@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Secure Cloud Access{% endblock %}</title>
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'css/app.css' %}">
+</head>
+<body class="{% block body_class %}page-default{% endblock %}">
+    <div class="page-shell">
+        <header class="site-header">
+            <a class="brand" href="{% url 'accounts:home' %}">
+                <span class="brand-mark">SC</span>
+                <div>
+                    <h1>Secure Cloud Access</h1>
+                    <p>Role-based cloud access with password + email OTP</p>
+                </div>
+            </a>
+            <nav class="main-nav">
+                <a href="{% url 'accounts:home' %}#top">Home</a>
+                <a href="{% url 'accounts:about' %}#story">About Us</a>
+                <a href="{% url 'accounts:how-it-works' %}#journey">How It Works</a>
+                {% if user.is_authenticated %}
+                    <a href="{% url 'accounts:dashboard' %}">Dashboard</a>
+                    <form method="post" action="{% url 'accounts:logout' %}" class="inline-form">
+                        {% csrf_token %}
+                        <button type="submit" class="link-button">Logout</button>
+                    </form>
+                {% else %}
+                    <a href="{% url 'accounts:login' %}">Login</a>
+                    <a class="nav-cta" href="{% url 'accounts:register' %}">Register</a>
+                {% endif %}
+            </nav>
+        </header>
+
+        <main class="container">
+            {% if messages %}
+                <section class="flash-stack">
+                    {% for message in messages %}
+                        <article class="flash {{ message.tags }}">{{ message }}</article>
+                    {% endfor %}
+                </section>
+            {% endif %}
+            {% block content %}{% endblock %}
+        </main>
+    </div>
+
+    <aside class="voice-assistant" data-voice-assistant>
+        <div class="voice-assistant-card">
+            <div class="voice-assistant-top">
+                <div>
+                    <p class="voice-kicker">Voice Assistant</p>
+                    <h2>Talk to the app</h2>
+                </div>
+                <button type="button" class="voice-icon-button" data-voice-close aria-label="Hide voice assistant">
+                    Hide
+                </button>
+            </div>
+            <p class="voice-assistant-copy">
+                Use voice like a lightweight assistant: dictate fields, navigate pages, and optionally hear spoken responses.
+            </p>
+            <div class="voice-transcript-shell">
+                <span class="voice-transcript-label">Live transcript</span>
+                <p class="voice-transcript" data-voice-transcript>Press Start Voice and begin speaking.</p>
+            </div>
+            <p class="voice-assistant-status" data-voice-status aria-live="polite">
+                Voice mode is ready when your browser supports microphone access.
+            </p>
+            <div class="voice-assistant-actions">
+                <button type="button" class="button primary voice-main-button" data-voice-toggle>
+                    Start Voice
+                </button>
+                <button type="button" class="button ghost" data-voice-speak-toggle>
+                    Voice Reply Off
+                </button>
+            </div>
+            <div class="voice-command-list">
+                <span>Try saying:</span>
+                <strong>"focus email"</strong>
+                <strong>"fill email member at gmail dot com"</strong>
+                <strong>"go to login"</strong>
+                <strong>"submit form"</strong>
+            </div>
+        </div>
+    </aside>
+    <button type="button" class="voice-launcher" data-voice-open aria-label="Open voice assistant">
+        Voice
+    </button>
+
+    <script src="{% static 'js/app.js' %}"></script>
+</body>
+</html>

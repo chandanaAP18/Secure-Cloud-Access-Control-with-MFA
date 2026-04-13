@@ -1,0 +1,22 @@
+{% extends "base.html" %}
+
+{% block title %}Set Up Authenticator App{% endblock %}
+
+{% block content %}
+<section class="card auth-card">
+    <h2>Set up authenticator app TOTP</h2>
+    <p>Open Google Authenticator, Microsoft Authenticator, or another TOTP app and scan the QR code below. If needed, you can also enter the secret manually.</p>
+    <div class="totp-qr-wrap">
+        <img src="{{ qr_code_data_uri }}" alt="TOTP QR code for authenticator setup" class="totp-qr">
+    </div>
+    <p><strong>Secret key:</strong> {{ secret }}</p>
+    <p><strong>Setup URI:</strong></p>
+    <p class="helper-text">{{ otpauth_uri }}</p>
+    <form method="post" class="form-grid">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <button type="submit" class="button primary">Verify and Enable TOTP</button>
+    </form>
+    <p class="helper-text">After scanning, enter the current 6-digit code shown in your authenticator app.</p>
+</section>
+{% endblock %}

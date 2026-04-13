@@ -1,0 +1,33 @@
+{% extends "base.html" %}
+
+{% block title %}Verify Image{% endblock %}
+
+{% block content %}
+<section class="card auth-card">
+    <h2>Image verification</h2>
+    <p>Select the image that matches <strong>{{ prompt_label }}</strong>.</p>
+    <form method="post" class="form-grid">
+        {% csrf_token %}
+        {{ form.image_choice.errors }}
+        <div class="image-factor-grid">
+            {% for option in image_options %}
+                <label class="image-factor-card" for="id_image_choice_{{ forloop.counter0 }}">
+                    <input
+                        type="radio"
+                        name="{{ form.image_choice.html_name }}"
+                        value="{{ option.key }}"
+                        id="id_image_choice_{{ forloop.counter0 }}"
+                        {% if form.image_choice.value == option.key %}checked{% endif %}
+                    >
+                    <div class="image-factor-art">
+                        {{ option.svg|safe }}
+                    </div>
+                    <strong>{{ option.label }}</strong>
+                    <span>{{ option.hint }}</span>
+                </label>
+            {% endfor %}
+        </div>
+        <button type="submit" class="button primary">Verify Image</button>
+    </form>
+</section>
+{% endblock %}

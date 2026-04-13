@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ app_name }} OTP</title>
+</head>
+<body style="margin:0;padding:24px;background:#f4f7fb;font-family:Segoe UI,Tahoma,sans-serif;color:#0f172a;">
+    <table role="presentation" width="100%" cellspacing="0" cellpadding="0">
+        <tr>
+            <td align="center">
+                <table role="presentation" width="100%" style="max-width:560px;background:#ffffff;border-radius:24px;padding:32px;box-shadow:0 18px 50px rgba(15,23,42,0.08);">
+                    <tr>
+                        <td>
+                            <p style="margin:0 0 8px;color:#0f766e;font-size:12px;letter-spacing:2px;text-transform:uppercase;">{{ app_name }}</p>
+                            <h1 style="margin:0 0 12px;font-size:28px;">Verify your sign in</h1>
+                            <p style="margin:0 0 20px;color:#475569;">Hello{% if user.first_name %} {{ user.first_name }}{% endif %}, use this one-time password to continue.</p>
+                            <div style="margin:24px 0;padding:18px 24px;background:#ecfeff;border-radius:18px;text-align:center;">
+                                <span style="font-size:34px;font-weight:700;letter-spacing:8px;color:#115e59;">{{ code }}</span>
+                            </div>
+                            <p style="margin:0 0 12px;color:#475569;">This code expires in {{ expiry_minutes }} minute{% if expiry_minutes != 1 %}s{% endif %}.</p>
+                            <p style="margin:0;color:#64748b;font-size:14px;">If this wasn't you, you can safely ignore this email.</p>
+                        </td>
+                    </tr>
+                </table>
+            </td>
+        </tr>
+    </table>
+</body>
+</html>

@@ -1,0 +1,50 @@
+{% extends "base.html" %}
+
+{% block title %}Admin Dashboard{% endblock %}
+
+{% block content %}
+<section class="dashboard-grid">
+    <article class="metric-card">
+        <span>Total users</span>
+        <strong>{{ user_count }}</strong>
+    </article>
+    <article class="metric-card">
+        <span>Admins</span>
+        <strong>{{ admin_count }}</strong>
+    </article>
+</section>
+
+<section class="card">
+    <h2>Recent logins</h2>
+    <div class="table-wrap">
+        <table>
+            <thead>
+                <tr><th>Email</th><th>Status</th><th>IP</th><th>Time</th></tr>
+            </thead>
+            <tbody>
+                {% for activity in activities %}
+                    <tr>
+                        <td>{{ activity.email }}</td>
+                        <td>{{ activity.get_status_display }}</td>
+                        <td>{{ activity.ip_address|default:"Unknown" }}</td>
+                        <td>{{ activity.created_at }}</td>
+                    </tr>
+                {% empty %}
+                    <tr><td colspan="4">No activity recorded yet.</td></tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</section>
+
+<section class="card">
+    <h2>Latest registrations</h2>
+    <ul class="plain-list">
+        {% for member in users %}
+            <li>{{ member.email }} - {{ member.get_role_display }}</li>
+        {% empty %}
+            <li>No users found.</li>
+        {% endfor %}
+    </ul>
+</section>
+{% endblock %}

@@ -1,0 +1,16 @@
+{% extends "base.html" %}
+
+{% block title %}Verify CAPTCHA{% endblock %}
+
+{% block content %}
+<section class="card auth-card">
+    <h2>CAPTCHA verification</h2>
+    <p>Type the security code exactly as shown before you continue to the next authentication factor.</p>
+    <div class="captcha-display" aria-label="CAPTCHA code">{{ captcha_code }}</div>
+    <form method="post" class="form-grid">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <button type="submit" class="button primary">Verify CAPTCHA</button>
+    </form>
+</section>
+{% endblock %}

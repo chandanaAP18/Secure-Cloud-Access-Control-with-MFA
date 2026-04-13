@@ -1,0 +1,26 @@
+{% extends "base.html" %}
+
+{% block title %}Verify OTP{% endblock %}
+
+{% block content %}
+<section class="card auth-card">
+    <h2>Verify {{ factor_label }} OTP</h2>
+    <p>Enter the 6-digit code sent to {{ masked_destination }}. It expires in {{ otp_ttl }} minutes.</p>
+    <form method="post" class="form-grid">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <button type="submit" class="button primary">Verify</button>
+    </form>
+    <form method="post" action="{% url 'accounts:resend-otp' %}">
+        {% csrf_token %}
+        <button type="submit" class="button secondary" {% if resend_cooldown > 0 %}disabled{% endif %}>
+            {% if resend_cooldown > 0 %}
+                Resend in <span id="resend-seconds">{{ resend_cooldown }}</span>s
+            {% else %}
+                Resend OTP
+            {% endif %}
+        </button>
+    </form>
+    <p class="helper-text">Check inbox, spam, and promotions if the mail does not appear immediately.</p>
+</section>
+{% endblock %}

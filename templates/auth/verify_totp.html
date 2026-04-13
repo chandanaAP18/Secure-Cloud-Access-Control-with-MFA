@@ -1,0 +1,15 @@
+{% extends "base.html" %}
+
+{% block title %}Verify Authenticator App{% endblock %}
+
+{% block content %}
+<section class="card auth-card">
+    <h2>Verify authenticator app code</h2>
+    <p>Enter the 6-digit code currently shown in your authenticator app.</p>
+    <form method="post" class="form-grid">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <button type="submit" class="button primary">Verify Authenticator Code</button>
+    </form>
+</section>
+{% endblock %}

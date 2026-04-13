@@ -1,0 +1,19 @@
+{% extends "base.html" %}
+
+{% block title %}Choose Factor{% endblock %}
+
+{% block content %}
+<section class="card auth-card">
+    <h2>Choose a verification factor</h2>
+    <p>Select how you want to complete multi-factor authentication.</p>
+    <form method="post" class="form-grid">
+        {% csrf_token %}
+        {{ form.as_p }}
+        {% if not has_phone %}
+            <p class="helper-text">Phone OTP will only work after a phone number is saved on your account.</p>
+        {% endif %}
+        <p class="helper-text">Security question configured: {{ question }}</p>
+        <button type="submit" class="button primary">Continue</button>
+    </form>
+</section>
+{% endblock %}

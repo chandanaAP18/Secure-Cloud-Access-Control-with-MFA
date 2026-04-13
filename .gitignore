@@ -1,0 +1,13 @@
+__pycache__/
+*.py[cod]
+*.sqlite3
+.pytest_cache/
+pytest-cache-files-*/
+.venv/
+venv/
+staticfiles/
+.env
+.sixth/
+.zencoder/
+.zenflow/
+Secure-Cloud-Access-Control-with-MFA/

@@ -1,0 +1,15 @@
+{% extends "base.html" %}
+
+{% block title %}Verify Security Question{% endblock %}
+
+{% block content %}
+<section class="card auth-card">
+    <h2>Answer your security question</h2>
+    <p>{{ question }}</p>
+    <form method="post" class="form-grid">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <button type="submit" class="button primary">Verify Answer</button>
+    </form>
+</section>
+{% endblock %}

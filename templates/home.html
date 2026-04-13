@@ -1,0 +1,148 @@
+{% extends "base.html" %}
+
+{% block title %}Secure Cloud Access{% endblock %}
+{% block body_class %}page-home{% endblock %}
+
+{% block content %}
+<section class="home-banner" id="top">
+    <span class="banner-pill">Now Available</span>
+    <p>Sequential multi-factor authentication, role-based access, and activity visibility in one cloud-ready platform.</p>
+</section>
+
+<section class="hero hero-home aws-hero">
+    <div class="hero-copy">
+        <p class="eyebrow">Secure Identity Platform</p>
+        <h2>Protect cloud access with layered authentication and clear control.</h2>
+        <p class="hero-lead">
+            Secure Cloud Access uses the user's registered email as identity, a website password for sign-in, and a
+            sequential verification chain with email OTP, phone OTP, CAPTCHA, image verification, security question, and PIN before dashboard access.
+        </p>
+        <div class="cta-row">
+            <a class="button primary" href="{% url 'accounts:register' %}">Get started</a>
+            <a class="button secondary" href="{% url 'accounts:login' %}">Open console</a>
+        </div>
+        <div class="hero-meta">
+            <span>Built with Django</span>
+            <span>Sequential MFA flow</span>
+            <span>Production-ready structure</span>
+        </div>
+    </div>
+    <aside class="hero-panel">
+        <div class="mini-console">
+            <div class="console-top">
+                <span></span><span></span><span></span>
+            </div>
+            <div class="console-body">
+                <div class="console-item">
+                    <label>Sign-in Status</label>
+                    <strong>Protected by MFA</strong>
+                </div>
+                <div class="console-grid">
+                    <article>
+                        <span>Layer 1</span>
+                        <strong>Website Password</strong>
+                    </article>
+                    <article>
+                        <span>Layer 2</span>
+                        <strong>Email OTP</strong>
+                    </article>
+                </div>
+                <div class="console-list">
+                    <div><span class="dot dot-green"></span> Email OTP verified</div>
+                    <div><span class="dot dot-blue"></span> Phone OTP verified</div>
+                    <div><span class="dot dot-amber"></span> Question + PIN complete</div>
+                </div>
+            </div>
+        </div>
+    </aside>
+</section>
+
+<section class="stats-ribbon compact-ribbon" id="overview">
+    <article class="stat-chip">
+        <span>Authentication</span>
+        <strong>4-step MFA</strong>
+    </article>
+    <article class="stat-chip">
+        <span>Access Model</span>
+        <strong>Admin + User</strong>
+    </article>
+    <article class="stat-chip">
+        <span>Persistence</span>
+        <strong>MySQL-ready</strong>
+    </article>
+    <article class="stat-chip">
+        <span>Confidence</span>
+        <strong>Test-covered</strong>
+    </article>
+</section>
+
+<section class="home-section-grid">
+    <article class="card product-card">
+        <p class="eyebrow">Security</p>
+        <h3>Authentication that adds friction only where it matters.</h3>
+        <p>Email identifies the user, the website password authenticates them, and each extra factor adds another checkpoint.</p>
+    </article>
+    <article class="card product-card">
+        <p class="eyebrow">Visibility</p>
+        <h3>Dashboards built around who needs to see what.</h3>
+        <p>Admins get system activity and user insights. Standard users get their own clean access history and secure entry path.</p>
+    </article>
+    <article class="card product-card">
+        <p class="eyebrow">Scalability</p>
+        <h3>Structured for deployment, not just classroom demonstration.</h3>
+        <p>Database abstraction, testing, SMTP integration, and app separation keep the project extensible for real hosting.</p>
+    </article>
+</section>
+
+<section class="feature-split home-showcase">
+    <article class="card feature-copy">
+        <p class="eyebrow">Why Teams Use It</p>
+        <h3>From sign-in to dashboard, every step has a purpose.</h3>
+        <p>
+            The platform gives users a guided experience and gives administrators confidence that access events are being
+            controlled, verified, and recorded.
+        </p>
+        <ul class="feature-list">
+            <li>Email + website password sign-in</li>
+            <li>Email OTP, phone OTP, CAPTCHA, image verification, security question, and PIN in order</li>
+            <li>Role-based navigation and dashboard routing</li>
+            <li>OTP expiry, resend cooldown, and activity logging</li>
+        </ul>
+    </article>
+    <article class="card showcase-stack">
+        <div class="showcase-row">
+            <div class="showcase-box">
+                <span class="showcase-label">Verification</span>
+                <strong>5 min OTP validity</strong>
+            </div>
+            <div class="showcase-box">
+                <span class="showcase-label">Protection</span>
+                <strong>Hashed password, PIN, and answer</strong>
+            </div>
+        </div>
+        <div class="showcase-wide">
+            <span class="showcase-label">Operational View</span>
+            <strong>Audit-aware, role-specific dashboards</strong>
+            <p>Built to make password checks, OTP activity, security question verification, and user access feel visible and structured.</p>
+        </div>
+    </article>
+</section>
+
+<section class="feature-grid home-links">
+    <article class="card tint-card tint-amber">
+        <h3>About This Project</h3>
+        <p>See the mission, audience, and the thinking behind this secure cloud access system.</p>
+        <a class="text-link" href="{% url 'accounts:about' %}">Read About Us</a>
+    </article>
+    <article class="card tint-card tint-blue">
+        <h3>How the Flow Works</h3>
+        <p>Understand the full sign-in lifecycle from password verification to OTP validation and final access control.</p>
+        <a class="text-link" href="{% url 'accounts:how-it-works' %}">Explore the workflow</a>
+    </article>
+    <article class="card tint-card tint-green">
+        <h3>Open the Dashboard</h3>
+        <p>Go directly into the secure sign-in flow and access the role-specific dashboard experience.</p>
+        <a class="text-link" href="{% url 'accounts:login' %}">Sign in</a>
+    </article>
+</section>
+{% endblock %}

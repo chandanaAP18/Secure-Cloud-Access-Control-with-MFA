@@ -1,0 +1,64 @@
+{% extends "base.html" %}
+
+{% block title %}About Us{% endblock %}
+{% block body_class %}page-about{% endblock %}
+
+{% block content %}
+<section class="page-hero about-hero" id="story">
+    <div>
+        <p class="eyebrow">About Us</p>
+        <h2>Not just secure login, but a clearer story around trust.</h2>
+        <p>
+            Secure Cloud Access was shaped as a project site that explains what the platform does, why multi-factor
+            authentication matters, and how secure access can still feel understandable and welcoming while moving through
+            multiple verification checkpoints.
+        </p>
+    </div>
+    <div class="about-visual">
+        <svg viewBox="0 0 520 360" aria-hidden="true">
+            <defs>
+                <linearGradient id="aboutGlow" x1="0%" y1="0%" x2="100%" y2="100%">
+                    <stop offset="0%" stop-color="#f59e0b"/>
+                    <stop offset="100%" stop-color="#0f766e"/>
+                </linearGradient>
+            </defs>
+            <circle cx="150" cy="170" r="92" fill="url(#aboutGlow)" opacity="0.25"/>
+            <rect x="116" y="78" width="286" height="198" rx="36" fill="#ffffff"/>
+            <rect x="146" y="112" width="226" height="24" rx="12" fill="#123a65"/>
+            <rect x="146" y="156" width="164" height="18" rx="9" fill="#0f766e" opacity="0.35"/>
+            <rect x="146" y="190" width="126" height="18" rx="9" fill="#0f766e" opacity="0.22"/>
+            <circle cx="345" cy="213" r="44" fill="#fde68a"/>
+            <path d="M345 186c16 0 29 13 29 29s-13 29-29 29-29-13-29-29 13-29 29-29Zm0 13a16 16 0 1 0 0 32 16 16 0 0 0 0-32Z" fill="#92400e"/>
+        </svg>
+    </div>
+</section>
+
+<section class="feature-grid">
+    <article class="card accent-panel">
+        <h3>Mission</h3>
+        <p>Reduce unauthorized access by moving beyond password-only login and using email identity, website password, OTP, question, and PIN verification.</p>
+    </article>
+    <article class="card accent-panel">
+        <h3>Audience</h3>
+        <p>Designed for academic demos, cloud security learning, and real teams that need a clean starting point for secure access workflows.</p>
+    </article>
+    <article class="card accent-panel">
+        <h3>Technology</h3>
+        <p>Django, HTML, CSS, JavaScript, MySQL-ready persistence, SMTP-based email OTP, sequential MFA, and automated tests across key flows.</p>
+    </article>
+</section>
+
+<section class="story-grid">
+    <article class="card">
+        <p class="eyebrow">Why This Project</p>
+        <h3>Cloud systems need identity checks that go beyond a single secret.</h3>
+        <p>
+            Weak password-only login is one of the simplest ways to lose control of sensitive applications. This project
+            demonstrates a practical answer: use registered email, a website password, then verify the user through each factor in order and log the activity.
+        </p>
+    </article>
+    <article class="card quote-panel">
+        <p>"Security works best when the experience is clear enough that users actually follow it."</p>
+    </article>
+</section>
+{% endblock %}

@@ -1,0 +1,70 @@
+{% extends "base.html" %}
+
+{% block title %}Login{% endblock %}
+
+{% block content %}
+<section class="card auth-card">
+    <h2>Sign in to continue</h2>
+    <p>Use your registered email and the password created for this website. After that, the system will guide you through each MFA factor one by one.</p>
+    <p class="helper-text">If you have already set up biometric login on your device, the flow can also continue with face unlock, fingerprint, or Windows Hello.</p>
+    <form method="post" class="form-grid">
+        {% csrf_token %}
+        {% for hidden in form.hidden_fields %}
+            {{ hidden }}
+        {% endfor %}
+
+        {% if form.non_field_errors %}
+            <section class="form-errors">
+                <h3>We could not sign you in</h3>
+                {{ form.non_field_errors }}
+            </section>
+        {% endif %}
+
+        <div class="form-field">
+            <label for="{{ form.username.id_for_label }}">{{ form.username.label }}</label>
+            <div class="voice-field">
+                {{ form.username|safe }}
+                <button
+                    type="button"
+                    class="voice-button"
+                    data-voice-target="{{ form.username.id_for_label }}"
+                    data-voice-mode="email"
+                    aria-describedby="voice-status-email"
+                >
+                    Use voice
+                </button>
+            </div>
+            {% if form.username.errors %}
+                <div class="field-errors">{{ form.username.errors }}</div>
+            {% endif %}
+            <p id="voice-status-email" class="voice-status helper-text" aria-live="polite">
+                You can type your email or use voice input to fill it automatically.
+            </p>
+        </div>
+
+        <div class="form-field">
+            <label for="{{ form.password.id_for_label }}">{{ form.password.label }}</label>
+            <div class="voice-field">
+                {{ form.password }}
+                <button
+                    type="button"
+                    class="voice-button"
+                    data-voice-target="{{ form.password.id_for_label }}"
+                    data-voice-mode="text"
+                    aria-describedby="voice-status-password"
+                >
+                    Use voice
+                </button>
+            </div>
+            {% if form.password.errors %}
+                <div class="field-errors">{{ form.password.errors }}</div>
+            {% endif %}
+            <p id="voice-status-password" class="voice-status helper-text" aria-live="polite">
+                You can also dictate the password field, but typing is still the more private option on shared devices.
+            </p>
+        </div>
+        <button type="submit" class="button primary">Continue</button>
+    </form>
+    <p class="helper-text">Do not enter your email account password here. This form uses your website account password. You can also use the floating voice assistant for live transcript, page commands, and spoken feedback.</p>
+</section>
+{% endblock %}

@@ -1,0 +1,27 @@
+{% extends "base.html" %}
+
+{% block title %}Register{% endblock %}
+
+{% block content %}
+<section class="card auth-card">
+    <h2>Create your secure account</h2>
+    <p>Create a normal user account with your email, a website password, phone number, security question, and PIN.</p>
+    {% if form.errors %}
+        <section class="form-errors">
+            <h3>Please fix these issues:</h3>
+            {{ form.non_field_errors }}
+            {% for field in form %}
+                {% if field.errors %}
+                    <p><strong>{{ field.label }}:</strong> {{ field.errors|join:", " }}</p>
+                {% endif %}
+            {% endfor %}
+        </section>
+    {% endif %}
+    <form method="post" class="form-grid">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <button type="submit" class="button primary">Register</button>
+    </form>
+    <p class="helper-text">Use a password with at least 8 characters. Public signup creates a standard user account. Admin accounts should be created separately.</p>
+</section>
+{% endblock %}
