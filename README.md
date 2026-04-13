@@ -10,6 +10,7 @@ Implement MFA (Password + OTP) authentication
 Provide Role-Based Access Control (Admin & User)
 Securely store and manage user credentials
 Monitor and log login activities for security
+
 🚀 Features
 User Registration & Login
 Email-based OTP Verification
@@ -17,6 +18,7 @@ Role-Based Access Control (RBAC)
 Secure Password Storage (Encryption)
 Login Activity Tracking
 Cloud Deployment Support
+
 🛠️ Tech Stack
 💻 Frontend
 HTML
@@ -31,11 +33,13 @@ AWS / Azure / GCP (Free Tier)
 GitHub
 VS Code
 Postman (API Testing)
+
 📂 Project Scope
 Secure web application hosted on cloud
 OTP-based authentication system
 Role-based access system
 Encrypted credential storage
+
 📚 Learning Outcomes
 Understanding cloud security concepts
 Hands-on MFA implementation
