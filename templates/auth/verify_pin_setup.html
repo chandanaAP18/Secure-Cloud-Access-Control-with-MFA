@@ -1,0 +1,43 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Set Up PIN{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/modern_auth.css' %}">
+{% endblock %}
+
+{% block content %}
+<div class="auth-page-wrapper">
+    <section class="mfa-flow-shell">
+        <div class="mfa-intro">
+            <span class="mfa-badge">SecureCloud MFA</span>
+            <h1>Verify Identity</h1>
+            <p>Complete each MFA step in sequence to access your account.</p>
+        </div>
+
+        <section class="mfa-card">
+            {% include "auth/_mfa_progress.html" %}
+
+            <div class="mfa-stage-body">
+                <h3>Set Up Security PIN</h3>
+                <p>Create a 4 to 8 digit PIN so future logins can include PIN verification.</p>
+
+                <form method="post" class="mfa-form">
+                    {% csrf_token %}
+                    <div class="mfa-field">
+                        <label for="{{ form.pin.id_for_label }}">{{ form.pin.label }}</label>
+                        {{ form.pin }}
+                        {% if form.pin.errors %}
+                            <div class="field-error">{{ form.pin.errors }}</div>
+                        {% endif %}
+                    </div>
+                    <div class="mfa-form-actions">
+                        <button type="submit" class="btn-primary">Save and Continue</button>
+                    </div>
+                </form>
+            </div>
+        </section>
+    </section>
+</div>
+{% endblock %}

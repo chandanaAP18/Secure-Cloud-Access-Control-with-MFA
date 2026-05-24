@@ -1,15 +1,53 @@
 {% extends "base.html" %}
+{% load static %}
 
 {% block title %}Verify Authenticator App{% endblock %}
 
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/modern_auth.css' %}">
+{% endblock %}
+
 {% block content %}
-<section class="card auth-card">
-    <h2>Verify authenticator app code</h2>
-    <p>Enter the 6-digit code currently shown in your authenticator app.</p>
-    <form method="post" class="form-grid">
-        {% csrf_token %}
-        {{ form.as_p }}
-        <button type="submit" class="button primary">Verify Authenticator Code</button>
-    </form>
-</section>
+<div class="auth-page-wrapper">
+    <section class="mfa-flow-shell">
+        <div class="mfa-intro">
+            <span class="mfa-badge">SecureCloud MFA</span>
+            <h1>Verify Identity</h1>
+            <p>Complete each MFA step in sequence to access your account.</p>
+        </div>
+
+        <section class="mfa-card">
+            {% include "auth/_mfa_progress.html" %}
+
+            <div class="mfa-stage-body">
+                <h3>Authenticator Verification</h3>
+                <p>Enter the 6-digit code currently shown in your authenticator app.</p>
+
+                <form method="post" class="mfa-form">
+                    {% csrf_token %}
+                    <div class="mfa-field">
+                        <label for="{{ form.otp.id_for_label }}">{{ form.otp.label }}</label>
+                        <div class="voice-field">
+                            {{ form.otp }}
+                            <button
+                                type="button"
+                                class="voice-button"
+                                data-voice-target="{{ form.otp.id_for_label }}"
+                                data-voice-mode="text"
+                            >
+                                Voice
+                            </button>
+                        </div>
+                        {% if form.otp.errors %}
+                            <div class="field-error">{{ form.otp.errors }}</div>
+                        {% endif %}
+                    </div>
+                    <div class="mfa-form-actions">
+                        <button type="submit" class="btn-primary">Verify Authenticator Code</button>
+                    </div>
+                </form>
+            </div>
+        </section>
+    </section>
+</div>
 {% endblock %}

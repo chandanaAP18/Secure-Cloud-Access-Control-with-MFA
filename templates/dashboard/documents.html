@@ -1,0 +1,1032 @@
+{% extends "base.html" %}
+{% block title %}Documents - SecureCloud{% endblock %}
+
+{% block extra_css %}
+<style>
+    .documents-page {
+        display: grid;
+        grid-template-columns: 250px minmax(0, 1fr);
+        gap: 1.2rem;
+        align-items: start;
+    }
+
+    .visually-hidden {
+        position: absolute;
+        width: 1px;
+        height: 1px;
+        padding: 0;
+        margin: -1px;
+        overflow: hidden;
+        clip: rect(0, 0, 0, 0);
+        white-space: nowrap;
+        border: 0;
+    }
+
+    .form-error {
+        margin-top: 0.45rem;
+        color: var(--danger);
+        font-size: 0.84rem;
+        font-weight: 700;
+    }
+
+    .documents-sidebar,
+    .documents-workspace,
+    .upload-panel {
+        background: rgba(255, 255, 255, 0.9);
+        border: 1px solid rgba(255, 255, 255, 0.9);
+        box-shadow: var(--shadow);
+        backdrop-filter: blur(14px);
+    }
+
+    .documents-sidebar {
+        position: sticky;
+        top: 6.5rem;
+        border-radius: 1.35rem;
+        padding: 1rem;
+        display: grid;
+        gap: 1rem;
+    }
+
+    .documents-new-button,
+    .documents-action,
+    .documents-icon-button,
+    .document-chip {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0.45rem;
+        font: inherit;
+        font-weight: 800;
+        text-decoration: none;
+        border: 0;
+        cursor: pointer;
+    }
+
+    .documents-new-button {
+        width: 100%;
+        min-height: 3.2rem;
+        border-radius: 0.9rem;
+        background: linear-gradient(145deg, var(--accent), var(--accent-strong));
+        color: #ffffff;
+        box-shadow: 0 16px 30px rgba(15, 118, 110, 0.18);
+    }
+
+    .documents-new-button::before {
+        content: "+";
+        display: grid;
+        place-items: center;
+        width: 1.45rem;
+        height: 1.45rem;
+        border-radius: 50%;
+        background: rgba(255, 255, 255, 0.18);
+        font-size: 1.25rem;
+        line-height: 1;
+    }
+
+    .documents-side-nav {
+        display: grid;
+        gap: 0.3rem;
+    }
+
+    .documents-side-link {
+        display: flex;
+        align-items: center;
+        gap: 0.7rem;
+        padding: 0.78rem 0.85rem;
+        border-radius: 0.8rem;
+        color: var(--muted);
+        font-weight: 750;
+        transition: background 180ms ease, color 180ms ease, transform 180ms ease;
+    }
+
+    .documents-side-link:hover,
+    .documents-side-link.is-active {
+        background: rgba(15, 118, 110, 0.1);
+        color: var(--accent-strong);
+        transform: translateY(-1px);
+    }
+
+    .documents-side-icon,
+    .document-file-icon,
+    .view-symbol {
+        position: relative;
+        display: inline-block;
+        flex: 0 0 auto;
+    }
+
+    .documents-side-icon {
+        width: 1.1rem;
+        height: 1.1rem;
+        border-radius: 0.28rem;
+        background: currentColor;
+        opacity: 0.78;
+    }
+
+    .documents-side-icon.shared {
+        border-radius: 50%;
+        background: transparent;
+        box-shadow: inset 0 0 0 2px currentColor;
+    }
+
+    .documents-side-icon.recent {
+        border-radius: 50%;
+        background: transparent;
+        border: 2px solid currentColor;
+    }
+
+    .documents-side-icon.recent::after {
+        content: "";
+        position: absolute;
+        left: 50%;
+        top: 22%;
+        width: 2px;
+        height: 42%;
+        background: currentColor;
+        transform-origin: bottom;
+        transform: translateX(-50%) rotate(40deg);
+    }
+
+    .documents-side-icon.star {
+        background: transparent;
+    }
+
+    .documents-side-icon.star::before {
+        content: "*";
+        position: absolute;
+        inset: -0.22rem 0 0;
+        color: currentColor;
+        font-size: 1.55rem;
+        line-height: 1;
+    }
+
+    .documents-storage {
+        display: grid;
+        gap: 0.55rem;
+        padding: 0.85rem;
+        border-radius: 0.95rem;
+        background: rgba(18, 58, 101, 0.05);
+        border: 1px solid rgba(19, 32, 60, 0.08);
+    }
+
+    .documents-storage-bar {
+        height: 0.46rem;
+        overflow: hidden;
+        border-radius: 999px;
+        background: rgba(18, 58, 101, 0.12);
+    }
+
+    .documents-storage-bar span {
+        display: block;
+        width: 18%;
+        height: 100%;
+        border-radius: inherit;
+        background: linear-gradient(90deg, var(--accent), var(--amber));
+    }
+
+    .documents-storage small {
+        color: var(--muted);
+        font-weight: 700;
+    }
+
+    .documents-workspace {
+        min-width: 0;
+        border-radius: 1.45rem;
+        overflow: hidden;
+    }
+
+    .documents-topbar {
+        display: grid;
+        grid-template-columns: minmax(0, 1fr) auto;
+        gap: 1rem;
+        align-items: center;
+        padding: 1rem;
+        border-bottom: 1px solid rgba(19, 32, 60, 0.08);
+        background: rgba(248, 251, 255, 0.76);
+    }
+
+    .documents-search {
+        position: relative;
+        min-width: 0;
+    }
+
+    .documents-search::before {
+        content: "";
+        position: absolute;
+        left: 1rem;
+        top: 50%;
+        width: 0.85rem;
+        height: 0.85rem;
+        border: 2px solid var(--muted);
+        border-radius: 50%;
+        transform: translateY(-55%);
+        opacity: 0.75;
+    }
+
+    .documents-search::after {
+        content: "";
+        position: absolute;
+        left: 1.74rem;
+        top: 59%;
+        width: 0.45rem;
+        height: 2px;
+        border-radius: 999px;
+        background: var(--muted);
+        transform: rotate(45deg);
+        opacity: 0.75;
+    }
+
+    .documents-search input {
+        width: 100%;
+        min-height: 3rem;
+        padding: 0.8rem 1rem 0.8rem 2.8rem;
+        border-radius: 0.85rem;
+        border: 1px solid rgba(19, 32, 60, 0.08);
+        background: #ffffff;
+        color: var(--ink);
+        font: inherit;
+        box-shadow: 0 8px 22px rgba(18, 58, 101, 0.05);
+    }
+
+    .documents-search input:focus,
+    .upload-panel input[type="file"]:focus {
+        outline: none;
+        border-color: rgba(15, 118, 110, 0.45);
+        box-shadow: 0 0 0 4px rgba(15, 118, 110, 0.1);
+    }
+
+    .documents-toolbar {
+        display: flex;
+        align-items: center;
+        gap: 0.55rem;
+    }
+
+    .documents-action {
+        min-height: 2.8rem;
+        padding: 0.7rem 1rem;
+        border-radius: 0.85rem;
+        color: var(--navy);
+        background: #ffffff;
+        border: 1px solid rgba(19, 32, 60, 0.1);
+    }
+
+    .documents-icon-button {
+        width: 2.8rem;
+        height: 2.8rem;
+        border-radius: 0.85rem;
+        background: #ffffff;
+        color: var(--muted);
+        border: 1px solid rgba(19, 32, 60, 0.1);
+    }
+
+    .documents-icon-button.is-active {
+        background: rgba(15, 118, 110, 0.12);
+        color: var(--accent-strong);
+        border-color: rgba(15, 118, 110, 0.18);
+    }
+
+    .view-symbol.grid {
+        width: 1.05rem;
+        height: 1.05rem;
+        background:
+            linear-gradient(currentColor 0 0) 0 0 / 0.42rem 0.42rem no-repeat,
+            linear-gradient(currentColor 0 0) 100% 0 / 0.42rem 0.42rem no-repeat,
+            linear-gradient(currentColor 0 0) 0 100% / 0.42rem 0.42rem no-repeat,
+            linear-gradient(currentColor 0 0) 100% 100% / 0.42rem 0.42rem no-repeat;
+    }
+
+    .view-symbol.list {
+        width: 1.15rem;
+        height: 0.9rem;
+        background:
+            linear-gradient(currentColor 0 0) 0 0 / 100% 2px no-repeat,
+            linear-gradient(currentColor 0 0) 0 50% / 100% 2px no-repeat,
+            linear-gradient(currentColor 0 0) 0 100% / 100% 2px no-repeat;
+    }
+
+    .documents-header {
+        padding: 1.35rem 1.4rem 0;
+    }
+
+    .documents-header-row {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+        gap: 1rem;
+        margin-bottom: 1rem;
+    }
+
+    .documents-header h2 {
+        margin: 0.25rem 0 0.25rem;
+        font-size: clamp(1.7rem, 4vw, 2.8rem);
+        line-height: 1.05;
+        letter-spacing: -0.04em;
+    }
+
+    .documents-header p {
+        margin: 0;
+        color: var(--muted);
+        line-height: 1.55;
+    }
+
+    .document-chip {
+        min-height: 2.35rem;
+        padding: 0.55rem 0.8rem;
+        border-radius: 999px;
+        background: rgba(18, 58, 101, 0.06);
+        color: var(--navy);
+        font-size: 0.88rem;
+        white-space: nowrap;
+    }
+
+    .documents-tabs {
+        display: flex;
+        align-items: center;
+        gap: 1.4rem;
+        border-bottom: 1px solid rgba(19, 32, 60, 0.09);
+    }
+
+    .documents-tab {
+        position: relative;
+        padding: 0.9rem 0 0.85rem;
+        color: var(--muted);
+        font-weight: 800;
+    }
+
+    .documents-tab.is-active {
+        color: var(--accent-strong);
+    }
+
+    .documents-tab.is-active::after {
+        content: "";
+        position: absolute;
+        left: 0;
+        right: 0;
+        bottom: -1px;
+        height: 3px;
+        border-radius: 999px 999px 0 0;
+        background: var(--accent);
+    }
+
+    .documents-sort-row {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 1rem;
+        padding: 0.9rem 1.4rem;
+        color: var(--muted);
+        font-size: 0.86rem;
+        font-weight: 800;
+        text-transform: uppercase;
+        letter-spacing: 0.08em;
+        background: rgba(255, 255, 255, 0.62);
+        border-bottom: 1px solid rgba(19, 32, 60, 0.06);
+    }
+
+    .documents-sort-name {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.45rem;
+        color: var(--ink);
+    }
+
+    .documents-sort-name::after {
+        content: "";
+        width: 0.55rem;
+        height: 0.55rem;
+        border-left: 2px solid currentColor;
+        border-bottom: 2px solid currentColor;
+        transform: rotate(135deg);
+    }
+
+    .documents-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(210px, 1fr));
+        gap: 1rem;
+        padding: 1.2rem 1.4rem 1.5rem;
+    }
+
+    .document-card {
+        position: relative;
+        min-width: 0;
+        overflow: visible;
+        border-radius: 0.95rem;
+        background: rgba(248, 251, 255, 0.95);
+        border: 1px solid rgba(19, 32, 60, 0.08);
+        transition: transform 180ms ease, box-shadow 180ms ease, border-color 180ms ease, background 180ms ease;
+    }
+
+    .document-card:hover {
+        transform: translateY(-3px);
+        border-color: rgba(15, 118, 110, 0.25);
+        background: #ffffff;
+        box-shadow: 0 18px 36px rgba(18, 58, 101, 0.12);
+    }
+
+    .document-card-top {
+        display: grid;
+        grid-template-columns: auto minmax(0, 1fr) auto;
+        gap: 0.7rem;
+        align-items: start;
+        padding: 0.9rem 0.8rem 0.75rem;
+    }
+
+    .document-title {
+        min-width: 0;
+    }
+
+    .document-title strong {
+        display: -webkit-box;
+        -webkit-line-clamp: 2;
+        -webkit-box-orient: vertical;
+        min-height: 2.45rem;
+        overflow: hidden;
+        color: var(--ink);
+        font-size: 0.96rem;
+        line-height: 1.28;
+        overflow-wrap: anywhere;
+    }
+
+    .document-title span {
+        display: block;
+        margin-top: 0.28rem;
+        color: var(--muted);
+        font-size: 0.78rem;
+        font-weight: 700;
+    }
+
+    .document-file-icon {
+        width: 2rem;
+        height: 2rem;
+        border-radius: 0.45rem;
+        display: grid;
+        place-items: center;
+        color: #ffffff;
+        background: var(--navy);
+        font-size: 0.58rem;
+        font-weight: 900;
+        letter-spacing: 0.04em;
+        text-transform: uppercase;
+        box-shadow: inset 0 -0.45rem 0 rgba(0, 0, 0, 0.08);
+    }
+
+    .document-file-icon.pdf { background: #dc5757; }
+    .document-file-icon.image { background: #0f766e; }
+    .document-file-icon.zip { background: #d97706; }
+    .document-file-icon.text { background: #2563eb; }
+
+    .document-menu {
+        position: relative;
+    }
+
+    .document-menu summary {
+        list-style: none;
+        display: grid;
+        place-items: center;
+        width: 2rem;
+        height: 2rem;
+        border-radius: 999px;
+        color: var(--muted);
+        cursor: pointer;
+    }
+
+    .document-menu summary::-webkit-details-marker {
+        display: none;
+    }
+
+    .document-menu summary::before {
+        content: "";
+        width: 4px;
+        height: 4px;
+        border-radius: 50%;
+        background: currentColor;
+        box-shadow: 0 -7px 0 currentColor, 0 7px 0 currentColor;
+    }
+
+    .document-menu[open] summary,
+    .document-menu summary:hover {
+        background: rgba(18, 58, 101, 0.07);
+        color: var(--ink);
+    }
+
+    .document-menu-panel {
+        position: absolute;
+        z-index: 10;
+        right: 0;
+        top: 2.25rem;
+        width: 178px;
+        padding: 0.35rem;
+        border-radius: 0.85rem;
+        background: #ffffff;
+        border: 1px solid rgba(19, 32, 60, 0.1);
+        box-shadow: 0 18px 40px rgba(18, 58, 101, 0.18);
+    }
+
+    .document-menu-panel a,
+    .document-menu-panel button {
+        width: 100%;
+        display: flex;
+        align-items: center;
+        padding: 0.65rem 0.7rem;
+        border-radius: 0.62rem;
+        background: transparent;
+        color: var(--ink);
+        font: inherit;
+        font-size: 0.9rem;
+        font-weight: 750;
+        text-align: left;
+    }
+
+    .document-menu-panel a:hover,
+    .document-menu-panel button:hover {
+        background: rgba(18, 58, 101, 0.06);
+        transform: none;
+    }
+
+    .document-menu-panel .danger {
+        color: var(--danger);
+    }
+
+    .document-preview {
+        display: grid;
+        place-items: center;
+        height: 132px;
+        margin: 0 0.8rem 0.8rem;
+        overflow: hidden;
+        border-radius: 0.7rem;
+        background:
+            linear-gradient(135deg, rgba(219, 234, 254, 0.75), rgba(204, 251, 241, 0.75)),
+            #f8fafc;
+        border: 1px solid rgba(19, 32, 60, 0.06);
+    }
+
+    .document-preview img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        display: block;
+    }
+
+    .document-preview-art {
+        width: min(75%, 150px);
+        aspect-ratio: 1.42;
+        border-radius: 0.62rem;
+        background: #ffffff;
+        border: 1px solid rgba(19, 32, 60, 0.08);
+        box-shadow: 0 16px 28px rgba(18, 58, 101, 0.12);
+        padding: 0.85rem;
+    }
+
+    .document-preview-art .line {
+        display: block;
+        height: 0.45rem;
+        margin-bottom: 0.45rem;
+        border-radius: 999px;
+        background: rgba(18, 58, 101, 0.14);
+    }
+
+    .document-preview-art .line:nth-child(1) {
+        width: 52%;
+        background: rgba(15, 118, 110, 0.35);
+    }
+
+    .document-preview-art .line:nth-child(2) { width: 86%; }
+    .document-preview-art .line:nth-child(3) { width: 68%; }
+    .document-preview-art .line:nth-child(4) { width: 92%; }
+
+    .document-meta {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 0.7rem;
+        padding: 0 0.85rem 0.85rem;
+        color: var(--muted);
+        font-size: 0.78rem;
+        font-weight: 700;
+    }
+
+    .upload-panel {
+        display: none;
+        margin: 0 1.4rem 1.2rem;
+        border-radius: 1rem;
+        padding: 1rem;
+    }
+
+    .upload-panel.is-open {
+        display: block;
+    }
+
+    .upload-form {
+        display: grid;
+        grid-template-columns: minmax(0, 1fr) auto;
+        gap: 0.8rem;
+        align-items: end;
+    }
+
+    .upload-form label {
+        display: block;
+        margin-bottom: 0.45rem;
+        color: var(--muted);
+        font-size: 0.78rem;
+        font-weight: 800;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+    }
+
+    .upload-panel input[type="file"] {
+        width: 100%;
+        min-height: 2.8rem;
+        padding: 0.62rem;
+        border-radius: 0.8rem;
+        border: 1px solid rgba(19, 32, 60, 0.12);
+        background: #ffffff;
+        color: var(--muted);
+        font: inherit;
+    }
+
+    .upload-submit {
+        min-height: 2.8rem;
+        padding: 0.72rem 1.1rem;
+        border-radius: 0.8rem;
+        background: var(--navy);
+        color: #ffffff;
+        font-weight: 800;
+    }
+
+    .documents-empty {
+        display: grid;
+        place-items: center;
+        min-height: 340px;
+        padding: 2rem;
+        text-align: center;
+    }
+
+    .documents-empty-card {
+        max-width: 390px;
+    }
+
+    .documents-empty-icon {
+        width: 5.2rem;
+        height: 4rem;
+        margin: 0 auto 1rem;
+        border-radius: 0.65rem 0.65rem 0.8rem 0.8rem;
+        background: linear-gradient(145deg, #f6c45c, #f0b04e);
+        position: relative;
+        box-shadow: 0 18px 34px rgba(245, 158, 11, 0.18);
+    }
+
+    .documents-empty-icon::before {
+        content: "";
+        position: absolute;
+        left: 0.45rem;
+        top: -0.48rem;
+        width: 2.25rem;
+        height: 0.9rem;
+        border-radius: 0.45rem 0.45rem 0 0;
+        background: #f6c45c;
+    }
+
+    .documents-empty h3 {
+        margin: 0 0 0.45rem;
+        font-size: 1.45rem;
+    }
+
+    .documents-empty p {
+        margin: 0 0 1.1rem;
+        color: var(--muted);
+        line-height: 1.6;
+    }
+
+    .documents-grid.is-list {
+        grid-template-columns: 1fr;
+        gap: 0.65rem;
+    }
+
+    .documents-grid.is-list .document-card {
+        display: grid;
+        grid-template-columns: minmax(0, 1fr) 180px;
+        align-items: center;
+    }
+
+    .documents-grid.is-list .document-card-top {
+        grid-row: 1;
+    }
+
+    .documents-grid.is-list .document-preview {
+        grid-column: 2;
+        grid-row: 1 / span 2;
+        height: 92px;
+        margin: 0.75rem;
+    }
+
+    .documents-grid.is-list .document-meta {
+        padding-left: 3.55rem;
+    }
+
+    .document-card.is-hidden {
+        display: none;
+    }
+
+    @media (max-width: 980px) {
+        .documents-page {
+            grid-template-columns: 1fr;
+        }
+
+        .documents-sidebar {
+            position: static;
+            grid-template-columns: minmax(180px, 0.7fr) minmax(0, 1fr);
+        }
+
+        .documents-storage {
+            grid-column: 1 / -1;
+        }
+    }
+
+    @media (max-width: 720px) {
+        .documents-topbar,
+        .documents-header-row,
+        .upload-form {
+            grid-template-columns: 1fr;
+        }
+
+        .documents-header-row {
+            display: grid;
+        }
+
+        .documents-toolbar,
+        .documents-tabs {
+            overflow-x: auto;
+            padding-bottom: 0.2rem;
+        }
+
+        .documents-grid {
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 0.8rem;
+            padding-inline: 0.9rem;
+        }
+
+        .documents-header,
+        .documents-sort-row {
+            padding-inline: 0.9rem;
+        }
+
+        .upload-panel {
+            margin-inline: 0.9rem;
+        }
+
+        .documents-grid.is-list .document-card {
+            grid-template-columns: 1fr;
+        }
+
+        .documents-grid.is-list .document-preview {
+            grid-column: auto;
+            grid-row: auto;
+            height: 120px;
+        }
+
+        .documents-grid.is-list .document-meta {
+            padding-left: 0.85rem;
+        }
+    }
+
+    @media (max-width: 520px) {
+        .documents-sidebar {
+            grid-template-columns: 1fr;
+        }
+
+        .documents-grid {
+            grid-template-columns: 1fr;
+        }
+
+        .documents-sort-row {
+            align-items: flex-start;
+            flex-direction: column;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<section class="documents-page">
+    <aside class="documents-sidebar" aria-label="Document navigation">
+        <button type="button" class="documents-new-button" data-upload-toggle>
+            New Upload
+        </button>
+
+        <nav class="documents-side-nav">
+            <a class="documents-side-link is-active" href="{% url 'accounts:document-dashboard' %}">
+                <span class="documents-side-icon"></span>
+                My Files
+            </a>
+            <a class="documents-side-link" href="{% url 'accounts:user-dashboard' %}">
+                <span class="documents-side-icon shared"></span>
+                Dashboard
+            </a>
+            <a class="documents-side-link" href="#">
+                <span class="documents-side-icon recent"></span>
+                Recent
+            </a>
+            <a class="documents-side-link" href="#">
+                <span class="documents-side-icon star"></span>
+                Starred
+            </a>
+        </nav>
+
+        <div class="documents-storage">
+            <div class="documents-storage-bar" aria-hidden="true"><span></span></div>
+            <small>{{ documents|length }} file{{ documents|length|pluralize }} protected in SecureCloud</small>
+        </div>
+    </aside>
+
+    <section class="documents-workspace" aria-label="My documents">
+        <div class="documents-topbar">
+            <label class="documents-search">
+                <span class="visually-hidden">Search documents</span>
+                <input type="search" placeholder="Search your secure files" data-document-search>
+            </label>
+            <div class="documents-toolbar" aria-label="Document controls">
+                <button type="button" class="documents-action" data-upload-toggle>Upload</button>
+                <button type="button" class="documents-icon-button is-active" data-view-toggle="grid" aria-label="Grid view">
+                    <span class="view-symbol grid" aria-hidden="true"></span>
+                </button>
+                <button type="button" class="documents-icon-button" data-view-toggle="list" aria-label="List view">
+                    <span class="view-symbol list" aria-hidden="true"></span>
+                </button>
+            </div>
+        </div>
+
+        <div class="documents-header">
+            <div class="documents-header-row">
+                <div>
+                    <p class="section-kicker">Encrypted Document Vault</p>
+                    <h2>My Files</h2>
+                    <p>Upload and open your MFA-protected files from one clean workspace.</p>
+                    <p class="helper-text">All files are automatically scanned for threats before they are stored.</p>
+                </div>
+                <span class="document-chip">{{ documents|length }} item{{ documents|length|pluralize }}</span>
+            </div>
+
+            <div class="documents-tabs" role="tablist" aria-label="Document sections">
+                <span class="documents-tab is-active">My Drive</span>
+                <span class="documents-tab">Shared</span>
+                <span class="documents-tab">Verified</span>
+            </div>
+        </div>
+
+        <div class="upload-panel" data-upload-panel>
+            <form class="upload-form" method="post" enctype="multipart/form-data">
+                {% csrf_token %}
+                <div>
+                    <label for="{{ form.file.id_for_label }}">Choose file</label>
+                    {{ form.file }}
+                    <p class="helper-text">Supported formats are PDF, DOC, DOCX, TXT, RTF, JPG, PNG, GIF, BMP, and ZIP.</p>
+                    {% if form.file.errors %}
+                        <div class="form-error">{{ form.file.errors }}</div>
+                    {% endif %}
+                </div>
+                <button type="submit" class="upload-submit">Upload File</button>
+            </form>
+        </div>
+
+        <div class="documents-sort-row">
+            <span class="documents-sort-name">Name</span>
+            <span>Last uploaded</span>
+        </div>
+
+        {% if documents %}
+            <div class="documents-grid" data-documents-grid>
+                {% for doc in documents %}
+                    {% with file_name=doc.file.name|cut:"documents/" lower_name=doc.file.name|lower %}
+                    <article class="document-card" data-document-card data-document-name="{{ file_name|lower }}">
+                        <div class="document-card-top">
+                            {% if ".pdf" in lower_name %}
+                                <span class="document-file-icon pdf">PDF</span>
+                            {% elif ".png" in lower_name or ".jpg" in lower_name or ".jpeg" in lower_name or ".webp" in lower_name %}
+                                <span class="document-file-icon image">IMG</span>
+                            {% elif ".zip" in lower_name %}
+                                <span class="document-file-icon zip">ZIP</span>
+                            {% elif ".txt" in lower_name or ".doc" in lower_name %}
+                                <span class="document-file-icon text">DOC</span>
+                            {% else %}
+                                <span class="document-file-icon">FILE</span>
+                            {% endif %}
+
+                            <a class="document-title" href="{% url 'accounts:document-view' doc.id %}" target="_blank" rel="noopener">
+                                <strong title="{{ file_name }}">{{ file_name }}</strong>
+                                <span>{{ doc.file.size|filesizeformat }}</span>
+                            </a>
+
+                            <details class="document-menu">
+                                <summary aria-label="Open file actions"></summary>
+                                <div class="document-menu-panel">
+                                    <a href="{% url 'accounts:document-view' doc.id %}" target="_blank" rel="noopener">Open</a>
+                                    <a href="{% url 'accounts:document-view' doc.id %}" download>Download</a>
+                                    <button type="button" data-copy-link="{% url 'accounts:document-view' doc.id %}">Copy link</button>
+                                    <form method="post" action="{% url 'accounts:document-delete' doc.id %}">
+                                        {% csrf_token %}
+                                        <button type="submit" class="danger">Delete</button>
+                                    </form>
+                                </div>
+                            </details>
+                        </div>
+
+                        <a class="document-preview" href="{% url 'accounts:document-view' doc.id %}" target="_blank" rel="noopener" aria-label="Open {{ file_name }}">
+                            {% if ".png" in lower_name or ".jpg" in lower_name or ".jpeg" in lower_name or ".webp" in lower_name %}
+                                <img src="{% url 'accounts:document-view' doc.id %}" alt="">
+                            {% else %}
+                                <span class="document-preview-art" aria-hidden="true">
+                                    <span class="line"></span>
+                                    <span class="line"></span>
+                                    <span class="line"></span>
+                                    <span class="line"></span>
+                                </span>
+                            {% endif %}
+                        </a>
+
+                        <div class="document-meta">
+                            <span>{{ doc.uploaded_at|date:"M d, Y" }}</span>
+                            <span>Secured</span>
+                        </div>
+                    </article>
+                    {% endwith %}
+                {% endfor %}
+            </div>
+        {% else %}
+            <div class="documents-empty">
+                <div class="documents-empty-card">
+                    <div class="documents-empty-icon" aria-hidden="true"></div>
+                    <h3>Your document vault is empty</h3>
+                    <p>Start by uploading a PDF, image, certificate, or any file you want protected behind your account security.</p>
+                    <button type="button" class="documents-new-button" data-upload-toggle>Upload your first file</button>
+                </div>
+            </div>
+        {% endif %}
+    </section>
+</section>
+
+<script>
+    (function () {
+        const uploadPanel = document.querySelector("[data-upload-panel]");
+        const uploadToggles = document.querySelectorAll("[data-upload-toggle]");
+        const grid = document.querySelector("[data-documents-grid]");
+        const searchInput = document.querySelector("[data-document-search]");
+        const viewButtons = document.querySelectorAll("[data-view-toggle]");
+
+        uploadToggles.forEach((button) => {
+            button.addEventListener("click", () => {
+                if (!uploadPanel) {
+                    return;
+                }
+                uploadPanel.classList.toggle("is-open");
+                const fileInput = uploadPanel.querySelector("input[type='file']");
+                if (uploadPanel.classList.contains("is-open") && fileInput) {
+                    fileInput.focus();
+                }
+            });
+        });
+
+        viewButtons.forEach((button) => {
+            button.addEventListener("click", () => {
+                if (!grid) {
+                    return;
+                }
+                const view = button.dataset.viewToggle;
+                grid.classList.toggle("is-list", view === "list");
+                viewButtons.forEach((item) => item.classList.toggle("is-active", item === button));
+            });
+        });
+
+        if (searchInput && grid) {
+            searchInput.addEventListener("input", () => {
+                const query = searchInput.value.trim().toLowerCase();
+                grid.querySelectorAll("[data-document-card]").forEach((card) => {
+                    const name = card.dataset.documentName || "";
+                    card.classList.toggle("is-hidden", query && !name.includes(query));
+                });
+            });
+        }
+
+        document.querySelectorAll("[data-copy-link]").forEach((button) => {
+            button.addEventListener("click", async () => {
+                const url = new URL(button.dataset.copyLink, window.location.origin).href;
+                try {
+                    await navigator.clipboard.writeText(url);
+                    button.textContent = "Copied";
+                    setTimeout(() => {
+                        button.textContent = "Copy link";
+                    }, 1400);
+                } catch (error) {
+                    window.prompt("Copy this secure file link", url);
+                }
+            });
+        });
+
+        document.addEventListener("click", (event) => {
+            document.querySelectorAll(".document-menu[open]").forEach((menu) => {
+                if (!menu.contains(event.target)) {
+                    menu.removeAttribute("open");
+                }
+            });
+        });
+    })();
+</script>
+{% endblock %}

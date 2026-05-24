@@ -1,0 +1,113 @@
+{% extends "base.html" %}
+
+{% block title %}Admin Logs{% endblock %}
+
+{% block content %}
+<section class="dashboard-hero admin-hero logs-hero">
+    <div class="dashboard-hero-copy">
+        <p class="eyebrow">View Logs</p>
+        <h2>Access activity</h2>
+        <p>Review recorded sign-in events, MFA steps, devices, networks, and account status from one audit view.</p>
+        <div class="dashboard-badges">
+            <span>{{ activity_count }} total log{{ activity_count|pluralize }}</span>
+            <span>Admin only</span>
+        </div>
+    </div>
+    <div class="logs-storage-panel">
+        <div>
+            <span>Log storage</span>
+            <strong>{{ storage_used_kb }} KB</strong>
+            <small>of {{ storage_capacity_mb }} MB audit capacity</small>
+        </div>
+        <div class="logs-storage-meter" aria-label="Estimated log storage used">
+            <span style="width: {{ storage_percent }}%;"></span>
+        </div>
+        <p>Database-backed event history with device, IP, MFA status, and anomaly flags retained for admin review.</p>
+    </div>
+</section>
+
+<section class="logs-summary-grid" aria-label="Log summary">
+    <article>
+        <span>Total events</span>
+        <strong>{{ activity_count }}</strong>
+    </article>
+    <article>
+        <span>Successful</span>
+        <strong>{{ success_count }}</strong>
+    </article>
+    <article>
+        <span>Failed checks</span>
+        <strong>{{ failed_count }}</strong>
+    </article>
+    <article>
+        <span>Unusual</span>
+        <strong>{{ unusual_count }}</strong>
+    </article>
+    <article>
+        <span>Lockouts</span>
+        <strong>{{ lockout_count }}</strong>
+    </article>
+</section>
+
+<section class="card dashboard-section-card logs-card">
+    <div class="section-heading">
+        <article>
+            <p class="section-kicker">Audit trail</p>
+            <h2>Activity logs</h2>
+        </article>
+        <span class="status-pill is-outline">Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}</span>
+    </div>
+    <div class="table-wrap">
+        <table class="dashboard-table">
+            <thead>
+                <tr>
+                    <th>User</th>
+                    <th>Role</th>
+                    <th>Status</th>
+                    <th>IP / Network</th>
+                    <th>Device</th>
+                    <th>Flags</th>
+                    <th>Time</th>
+                    <th>Detail</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for activity in page_obj %}
+                    <tr>
+                        <td>
+                            {{ activity.email }}
+                            {% if activity.user %}
+                                <br><span class="table-meta">{{ activity.user.get_full_name|default:"No name saved" }}</span>
+                            {% endif %}
+                        </td>
+                        <td>{% if activity.user %}{{ activity.user.get_role_display }}{% else %}Unknown{% endif %}</td>
+                        <td>{{ activity.get_status_display }}</td>
+                        <td>{{ activity.ip_address|default:"Unknown" }}<br><span class="table-meta">{{ activity.location_label|default:"Unknown network" }}</span></td>
+                        <td>{{ activity.device_name|default:"Unknown device" }}</td>
+                        <td>
+                            {% if activity.is_unusual %}<span class="status-pill is-danger">Unusual</span>{% endif %}
+                            {% if activity.is_trusted_device %}<span class="status-pill is-live">Trusted</span>{% endif %}
+                            {% if not activity.is_unusual and not activity.is_trusted_device %}<span class="table-meta">None</span>{% endif %}
+                        </td>
+                        <td>{{ activity.created_at }}</td>
+                        <td>{{ activity.detail|default:"No detail" }}</td>
+                    </tr>
+                {% empty %}
+                    <tr><td colspan="8">No activity recorded yet.</td></tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+    {% if page_obj.has_other_pages %}
+        <nav class="pagination-row" aria-label="Log pagination">
+            {% if page_obj.has_previous %}
+                <a class="button secondary" href="?page={{ page_obj.previous_page_number }}">Previous</a>
+            {% endif %}
+            {% if page_obj.has_next %}
+                <a class="button secondary" href="?page={{ page_obj.next_page_number }}">Next</a>
+            {% endif %}
+        </nav>
+    {% endif %}
+</section>
+{% endblock %}

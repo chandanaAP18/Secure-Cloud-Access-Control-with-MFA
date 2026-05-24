@@ -1,0 +1,32 @@
+{% extends "base.html" %}
+
+{% block title %}My Documents{% endblock %}
+
+{% block content %}
+<!-- The view filters by request.user, so this list never includes another user's files. -->
+<section class="card dashboard-section-card">
+    <div class="section-heading">
+        <div>
+            <p class="section-kicker">Secure storage</p>
+            <h2>My documents</h2>
+        </div>
+        <a class="button primary" href="{% url 'accounts:document-upload' %}">Upload Document</a>
+    </div>
+
+    <ul class="plain-list dashboard-user-list">
+        {% for document in documents %}
+            <li>
+                <strong>{{ document.filename }}</strong>
+                <span>Uploaded {{ document.uploaded_at|date:"M d, Y H:i" }}</span>
+                <!-- This link calls the secure FileResponse view instead of using document.file.url. -->
+                <a class="button ghost" href="{% url 'accounts:document-download' document.id %}">Download</a>
+            </li>
+        {% empty %}
+            <li>
+                <strong>No documents uploaded yet</strong>
+                <span>Upload your first file to store it locally behind MFA-protected access.</span>
+            </li>
+        {% endfor %}
+    </ul>
+</section>
+{% endblock %}

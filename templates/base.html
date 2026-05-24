@@ -5,7 +5,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{% block title %}Secure Cloud Access{% endblock %}</title>
     {% load static %}
+    <meta name="csrf-token" content="{{ csrf_token }}">
     <link rel="stylesheet" href="{% static 'css/app.css' %}">
+    {% block extra_css %}{% endblock %}
 </head>
 <body class="{% block body_class %}page-default{% endblock %}">
     <div class="page-shell">
@@ -14,15 +16,26 @@
                 <span class="brand-mark">SC</span>
                 <div>
                     <h1>Secure Cloud Access</h1>
-                    <p>Role-based cloud access with password + email OTP</p>
+                    <p>Role-based cloud access with layered MFA and audit visibility</p>
                 </div>
             </a>
             <nav class="main-nav">
                 <a href="{% url 'accounts:home' %}#top">Home</a>
                 <a href="{% url 'accounts:about' %}#story">About Us</a>
                 <a href="{% url 'accounts:how-it-works' %}#journey">How It Works</a>
-                {% if user.is_authenticated %}
+                {% if user.is_authenticated and request.session.mfa_verified %}
                     <a href="{% url 'accounts:dashboard' %}">Dashboard</a>
+                    <a href="{% url 'accounts:document-dashboard' %}">Documents</a>
+                    <a class="nav-icon-link" href="{% url 'accounts:profile' %}" aria-label="Open profile" title="Profile">
+                        <span class="nav-icon profile-icon" aria-hidden="true"></span>
+                        <span>Profile</span>
+                    </a>
+                    {% if user.role == "ADMIN" %}
+                        <a class="nav-icon-link" href="{% url 'accounts:admin-logs' %}" aria-label="View all user logs" title="View Logs">
+                            <span class="nav-icon logs-icon" aria-hidden="true"></span>
+                            <span>Logs</span>
+                        </a>
+                    {% endif %}
                     <form method="post" action="{% url 'accounts:logout' %}" class="inline-form">
                         {% csrf_token %}
                         <button type="submit" class="link-button">Logout</button>
@@ -36,7 +49,7 @@
 
         <main class="container">
             {% if messages %}
-                <section class="flash-stack">
+                <section class="flash-stack" aria-live="polite" aria-atomic="true">
                     {% for message in messages %}
                         <article class="flash {{ message.tags }}">{{ message }}</article>
                     {% endfor %}
@@ -65,7 +78,7 @@
                 <p class="voice-transcript" data-voice-transcript>Press Start Voice and begin speaking.</p>
             </div>
             <p class="voice-assistant-status" data-voice-status aria-live="polite">
-                Voice mode is ready when your browser supports microphone access.
+                Voice mode is ready on localhost or HTTPS when your browser supports microphone access.
             </p>
             <div class="voice-assistant-actions">
                 <button type="button" class="button primary voice-main-button" data-voice-toggle>
@@ -89,5 +102,6 @@
     </button>
 
     <script src="{% static 'js/app.js' %}"></script>
+    <script src="{% static 'js/voice-commands.js' %}"></script>
 </body>
 </html>

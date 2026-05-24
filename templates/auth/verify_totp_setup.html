@@ -1,0 +1,56 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Set Up Two-Factor Authentication{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/modern_auth.css' %}">
+{% endblock %}
+
+{% block content %}
+<div class="auth-page-wrapper">
+    <section class="mfa-flow-shell">
+        <div class="mfa-intro">
+            <span class="mfa-badge">SecureCloud MFA</span>
+            <h1>Verify Identity</h1>
+            <p>Complete each MFA step in sequence to finish account setup.</p>
+        </div>
+
+        <section class="mfa-card">
+            {% include "auth/_mfa_progress.html" %}
+
+            <div class="mfa-stage-body">
+                <h3>Authenticator Setup</h3>
+                <p>Scan the QR code with Google Authenticator, Microsoft Authenticator, or any TOTP-compatible app, then enter the current code.</p>
+
+                <div class="totp-qr-wrap">
+                    <img src="{{ qr_code_data_uri }}" alt="QR code for authenticator app setup" class="totp-qr">
+                </div>
+
+                <details class="totp-manual-entry">
+                    <summary>Can't scan? Enter the key manually</summary>
+                    <div class="totp-manual-body">
+                        <p class="helper-text"><strong>Secret key:</strong></p>
+                        <code class="totp-secret-code">{{ secret }}</code>
+                        <p class="helper-text">{{ otpauth_uri }}</p>
+                    </div>
+                </details>
+
+                <form method="post" class="mfa-form">
+                    {% csrf_token %}
+                    <div class="mfa-field">
+                        <label for="{{ form.otp.id_for_label }}">Enter the 6-digit code from your app</label>
+                        {{ form.otp }}
+                        {% if form.otp.errors %}
+                            <div class="field-error">{{ form.otp.errors }}</div>
+                        {% endif %}
+                    </div>
+                    <div class="mfa-form-actions">
+                        <button type="submit" class="btn-primary">Verify and Continue</button>
+                    </div>
+                </form>
+            </div>
+        </section>
+    </section>
+</div>
+{% endblock %}

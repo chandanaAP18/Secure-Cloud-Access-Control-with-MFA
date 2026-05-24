@@ -1,0 +1,45 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/modern_auth.css' %}">
+{% endblock %}
+
+{% block content %}
+<div class="auth-page-wrapper">
+    <section class="mfa-flow-shell">
+        <div class="mfa-intro">
+            <span class="mfa-badge">SecureCloud MFA</span>
+            <h1>Verify Identity</h1>
+            <p>Complete each MFA step in sequence to access your account.</p>
+        </div>
+
+        <section class="mfa-card">
+            {% include "auth/_mfa_progress.html" %}
+
+            <div class="mfa-stage-body">
+                <h3>Text CAPTCHA</h3>
+                <p>{{ mfa_subheading }}</p>
+
+                <div class="captcha-display-box">
+                    {{ captcha_text }}
+                </div>
+
+                <form method="post" autocomplete="off" class="mfa-form">
+                    {% csrf_token %}
+                    <div class="mfa-field">
+                        <label for="{{ form.captcha_input.id_for_label }}">Enter the characters shown above</label>
+                        {{ form.captcha_input }}
+                        {% if form.errors %}
+                            <div class="field-error">Please check your input and try again.</div>
+                        {% endif %}
+                    </div>
+                    <div class="mfa-form-actions">
+                        <button type="submit" class="btn-primary">Verify and Continue</button>
+                    </div>
+                </form>
+            </div>
+        </section>
+    </section>
+</div>
+{% endblock %}

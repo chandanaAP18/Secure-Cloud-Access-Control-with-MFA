@@ -1,16 +1,50 @@
 {% extends "base.html" %}
+{% load static %}
 
 {% block title %}Verify CAPTCHA{% endblock %}
 
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/modern_auth.css' %}">
+{% endblock %}
+
 {% block content %}
-<section class="card auth-card">
-    <h2>CAPTCHA verification</h2>
-    <p>Type the security code exactly as shown before you continue to the next authentication factor.</p>
-    <div class="captcha-display" aria-label="CAPTCHA code">{{ captcha_code }}</div>
-    <form method="post" class="form-grid">
-        {% csrf_token %}
-        {{ form.as_p }}
-        <button type="submit" class="button primary">Verify CAPTCHA</button>
-    </form>
-</section>
+<div class="auth-page-wrapper">
+    <section class="mfa-flow-shell">
+        <div class="mfa-intro">
+            <span class="mfa-badge">SecureCloud MFA</span>
+            <h1>Verify Identity</h1>
+            <p>Complete each MFA step in sequence to access your account.</p>
+        </div>
+
+        <section class="mfa-card">
+            {% include "auth/_mfa_progress.html" %}
+
+            <div class="mfa-stage-body">
+                <h3>CAPTCHA</h3>
+                <p>Confirm that this sign-in attempt is being completed by a real person.</p>
+
+                <form method="post" class="mfa-form">
+                    {% csrf_token %}
+                    <div class="auth-captcha-row">
+                        <div class="auth-captcha-copy">
+                            <span class="auth-captcha-title">Not a robot</span>
+                            <p>This step protects the flow from automated sign-in attempts.</p>
+                        </div>
+                        <label class="auth-checkbox-card" for="{{ form.captcha_checkbox.id_for_label }}">
+                            {{ form.captcha_checkbox }}
+                            <span>{{ form.captcha_checkbox.label }}</span>
+                        </label>
+                        {% if form.captcha_checkbox.errors %}
+                            <div class="field-error">{{ form.captcha_checkbox.errors }}</div>
+                        {% endif %}
+                    </div>
+
+                    <div class="mfa-form-actions">
+                        <button type="submit" class="btn-primary">Verify and Continue</button>
+                    </div>
+                </form>
+            </div>
+        </section>
+    </section>
+</div>
 {% endblock %}

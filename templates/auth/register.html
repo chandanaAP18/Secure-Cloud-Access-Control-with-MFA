@@ -1,27 +1,80 @@
 {% extends "base.html" %}
+{% load static %}
 
-{% block title %}Register{% endblock %}
+{% block title %}Create Account{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/modern_auth.css' %}">
+{% endblock %}
 
 {% block content %}
-<section class="card auth-card">
-    <h2>Create your secure account</h2>
-    <p>Create a normal user account with your email, a website password, phone number, security question, and PIN.</p>
-    {% if form.errors %}
-        <section class="form-errors">
-            <h3>Please fix these issues:</h3>
-            {{ form.non_field_errors }}
-            {% for field in form %}
-                {% if field.errors %}
-                    <p><strong>{{ field.label }}:</strong> {{ field.errors|join:", " }}</p>
-                {% endif %}
-            {% endfor %}
-        </section>
-    {% endif %}
-    <form method="post" class="form-grid">
-        {% csrf_token %}
-        {{ form.as_p }}
-        <button type="submit" class="button primary">Register</button>
-    </form>
-    <p class="helper-text">Use a password with at least 8 characters. Public signup creates a standard user account. Admin accounts should be created separately.</p>
-</section>
+<div class="auth-page-wrapper">
+    <section class="auth-card-shell auth-card-shell-register">
+        <div class="auth-card-panel auth-card-panel-brand">
+            <p class="auth-eyebrow">Create your account</p>
+            <h1>Build your account in clear steps instead of one long form.</h1>
+            <p class="auth-panel-copy">
+                We’ll collect your account details step by step, then move you into the guided MFA setup flow.
+            </p>
+            <div class="auth-feature-list">
+                <div class="auth-feature-item">
+                    <strong>Step {{ register_step_index }} of {{ register_total_steps }}</strong>
+                    <span>{{ register_step_title }}</span>
+                </div>
+                <div class="auth-feature-item">
+                    <strong>After signup</strong>
+                    <span>Email OTP, CAPTCHA, image check, text CAPTCHA, question, PIN, voice ID, TOTP, and passkey setup continue in order.</span>
+                </div>
+                <div class="auth-feature-item">
+                    <strong>Result</strong>
+                    <span>New accounts leave registration ready for the full login flow.</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="auth-card-panel auth-card-panel-form">
+            <div class="auth-header">
+                <p class="auth-kicker">Step {{ register_step_index }} of {{ register_total_steps }}</p>
+                <h2>{{ register_step_title }}</h2>
+                <p>{{ register_step_description }}</p>
+            </div>
+
+            <div class="register-stepper">
+                {% for step in register_steps %}
+                    <div class="register-step register-step-{{ step.state }}">
+                        <div class="register-step-node">{{ step.index }}</div>
+                        <span>{{ step.label }}</span>
+                    </div>
+                {% endfor %}
+            </div>
+
+            <form method="post" class="auth-form" autocomplete="off">
+                {% csrf_token %}
+                {% for field in form %}
+                    <div class="form-group">
+                        <label for="{{ field.id_for_label }}">{{ field.label }}</label>
+                        {{ field }}
+                        {% if field.help_text %}
+                            <p class="helper-text">{{ field.help_text }}</p>
+                        {% endif %}
+                        {% if field.errors %}
+                            <div class="field-error">{{ field.errors }}</div>
+                        {% endif %}
+                    </div>
+                {% endfor %}
+
+                <div class="auth-button-group">
+                    {% if register_step_index > 1 %}
+                        <button type="submit" name="go_back" value="1" class="btn-secondary">Back</button>
+                    {% endif %}
+                    <button type="submit" class="btn-primary">{% if register_step_index == register_total_steps %}Create Account{% else %}Continue{% endif %}</button>
+                </div>
+            </form>
+
+            <div class="auth-form-footer">
+                <p class="auth-switch-text">Already have an account? <a href="{% url 'accounts:login' %}" class="auth-text-link">Sign in instead</a></p>
+            </div>
+        </div>
+    </section>
+</div>
 {% endblock %}

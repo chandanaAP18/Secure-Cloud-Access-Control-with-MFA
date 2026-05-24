@@ -1,33 +1,53 @@
 {% extends "base.html" %}
+{% load static %}
 
-{% block title %}Verify Image{% endblock %}
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/modern_auth.css' %}">
+{% endblock %}
 
 {% block content %}
-<section class="card auth-card">
-    <h2>Image verification</h2>
-    <p>Select the image that matches <strong>{{ prompt_label }}</strong>.</p>
-    <form method="post" class="form-grid">
-        {% csrf_token %}
-        {{ form.image_choice.errors }}
-        <div class="image-factor-grid">
-            {% for option in image_options %}
-                <label class="image-factor-card" for="id_image_choice_{{ forloop.counter0 }}">
-                    <input
-                        type="radio"
-                        name="{{ form.image_choice.html_name }}"
-                        value="{{ option.key }}"
-                        id="id_image_choice_{{ forloop.counter0 }}"
-                        {% if form.image_choice.value == option.key %}checked{% endif %}
-                    >
-                    <div class="image-factor-art">
-                        {{ option.svg|safe }}
-                    </div>
-                    <strong>{{ option.label }}</strong>
-                    <span>{{ option.hint }}</span>
-                </label>
-            {% endfor %}
+<div class="auth-page-wrapper">
+    <section class="mfa-flow-shell">
+        <div class="mfa-intro">
+            <span class="mfa-badge">SecureCloud MFA</span>
+            <h1>Verify Identity</h1>
+            <p>Complete each MFA step in sequence to access your account.</p>
         </div>
-        <button type="submit" class="button primary">Verify Image</button>
-    </form>
-</section>
+
+        <section class="mfa-card">
+            {% include "auth/_mfa_progress.html" %}
+
+            <div class="mfa-stage-body">
+                <h3>Image Verification</h3>
+                <p>Select all images containing a <strong>{{ prompt_label }}</strong>.</p>
+
+                <form method="post" class="mfa-form">
+                    {% csrf_token %}
+                    <div class="image-grid">
+                        {% for option in image_options %}
+                        <label class="image-option" id="label-{{ option.key }}">
+                            <input type="checkbox" name="image_choices" value="{{ option.key }}" onchange="toggleImage(this)">
+                            {{ option.svg|safe }}
+                        </label>
+                        {% endfor %}
+                    </div>
+                    <div class="mfa-form-actions">
+                        <button type="submit" class="btn-primary">Verify Selection</button>
+                    </div>
+                </form>
+            </div>
+        </section>
+    </section>
+</div>
+
+<script>
+function toggleImage(checkbox) {
+    const label = document.getElementById('label-' + checkbox.value);
+    if (checkbox.checked) {
+        label.classList.add('selected');
+    } else {
+        label.classList.remove('selected');
+    }
+}
+</script>
 {% endblock %}

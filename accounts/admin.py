@@ -1,7 +1,7 @@
 from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin as DjangoUserAdmin
 
-from .models import OTPChallenge, User
+from .models import Document, OTPChallenge, User
 
 
 @admin.register(User)
@@ -32,3 +32,10 @@ class OTPChallengeAdmin(admin.ModelAdmin):
     list_display = ("user", "created_at", "expires_at", "attempts", "consumed_at")
     search_fields = ("user__email",)
     list_filter = ("created_at", "expires_at", "consumed_at")
+
+
+@admin.register(Document)
+class DocumentAdmin(admin.ModelAdmin):
+    list_display = ("user", "file", "uploaded_at")
+    list_filter = ("uploaded_at",)
+    search_fields = ("user__email", "file")

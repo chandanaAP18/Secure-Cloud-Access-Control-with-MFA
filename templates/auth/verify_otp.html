@@ -1,26 +1,49 @@
 {% extends "base.html" %}
+{% load static %}
 
-{% block title %}Verify OTP{% endblock %}
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/modern_auth.css' %}">
+{% endblock %}
 
 {% block content %}
-<section class="card auth-card">
-    <h2>Verify {{ factor_label }} OTP</h2>
-    <p>Enter the 6-digit code sent to {{ masked_destination }}. It expires in {{ otp_ttl }} minutes.</p>
-    <form method="post" class="form-grid">
-        {% csrf_token %}
-        {{ form.as_p }}
-        <button type="submit" class="button primary">Verify</button>
-    </form>
-    <form method="post" action="{% url 'accounts:resend-otp' %}">
-        {% csrf_token %}
-        <button type="submit" class="button secondary" {% if resend_cooldown > 0 %}disabled{% endif %}>
-            {% if resend_cooldown > 0 %}
-                Resend in <span id="resend-seconds">{{ resend_cooldown }}</span>s
-            {% else %}
-                Resend OTP
-            {% endif %}
-        </button>
-    </form>
-    <p class="helper-text">Check inbox, spam, and promotions if the mail does not appear immediately.</p>
-</section>
+<div class="auth-page-wrapper">
+    <section class="mfa-flow-shell">
+        <div class="mfa-intro">
+            <span class="mfa-badge">SecureCloud MFA</span>
+            <h1>Verify Identity</h1>
+            <p>Complete each MFA step in sequence to access your account.</p>
+        </div>
+
+        <section class="mfa-card">
+            {% include "auth/_mfa_progress.html" %}
+
+            <div class="mfa-stage-body">
+                <h3>Email OTP</h3>
+                <p>{{ mfa_subheading }}</p>
+
+                <form method="post" class="mfa-form">
+                    {% csrf_token %}
+                    <div class="mfa-field">
+                        <label for="{{ form.otp.id_for_label }}">6-digit code</label>
+                        {{ form.otp }}
+                        {% if form.otp.errors %}
+                            <div class="field-error">{{ form.otp.errors }}</div>
+                        {% endif %}
+                    </div>
+                    <div class="mfa-form-actions">
+                        <button type="submit" class="btn-primary">Verify Code</button>
+                    </div>
+                </form>
+
+                <form action="{% url 'accounts:resend-otp' %}" method="post">
+                    {% csrf_token %}
+                    <button type="submit" class="auth-text-link" style="background:none; border:none; cursor:pointer; padding:0;" id="resend-btn" disabled>
+                        Resend OTP (<span id="resend-seconds">{{ resend_cooldown }}</span>s)
+                    </button>
+                </form>
+            </div>
+        </section>
+    </section>
+</div>
+<script src="{% static 'js/app.js' %}"></script>
 {% endblock %}

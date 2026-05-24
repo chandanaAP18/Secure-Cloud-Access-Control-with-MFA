@@ -1,0 +1,181 @@
+{% extends "base.html" %}
+
+{% block title %}Profile{% endblock %}
+
+{% block content %}
+<section class="user-profile-tab" aria-label="User profile">
+    <div class="user-profile-card">
+        <div class="user-profile-cover" aria-hidden="true"></div>
+
+        <div class="user-profile-header">
+            <div class="user-profile-avatar" aria-hidden="true">
+                <span>{{ user.first_name|first|default:user.email|first|upper }}</span>
+            </div>
+
+            <h1>
+                {{ user.get_full_name|default:"Member" }}
+                <span class="user-profile-check" aria-label="Verified account">✓</span>
+            </h1>
+            <p>{{ user.email }}</p>
+        </div>
+
+        <dl class="user-profile-details">
+            <div>
+                <dt>Email</dt>
+                <dd>{{ user.email }}</dd>
+            </div>
+            <div>
+                <dt>Role</dt>
+                <dd><span class="user-profile-role">{{ user.get_role_display }}</span></dd>
+            </div>
+            <div>
+                <dt>Member Since</dt>
+                <dd>{{ user.date_joined|date:"F d, Y" }}</dd>
+            </div>
+        </dl>
+    </div>
+</section>
+
+<style>
+    .user-profile-tab {
+        min-height: calc(100vh - 220px);
+        display: grid;
+        place-items: start center;
+        padding: 1.25rem 1rem 3rem;
+    }
+
+    .user-profile-card {
+        width: min(100%, 330px);
+        position: relative;
+        overflow: hidden;
+        border-radius: 18px;
+        background: #ffffff;
+        border: 1px solid rgba(19, 32, 60, 0.08);
+        box-shadow: 0 20px 50px rgba(18, 58, 101, 0.12);
+        padding: 2.9rem 1.35rem 1.45rem;
+    }
+
+    .user-profile-cover {
+        position: absolute;
+        top: 1rem;
+        left: 1.2rem;
+        right: 1.2rem;
+        height: 4.3rem;
+        border-radius: 10px;
+        background:
+            linear-gradient(135deg, rgba(255, 244, 230, 0.96), rgba(236, 253, 245, 0.86)),
+            #fff4e6;
+    }
+
+    .user-profile-header {
+        position: relative;
+        z-index: 1;
+        text-align: center;
+        padding-top: 1.8rem;
+    }
+
+    .user-profile-avatar {
+        width: 4.1rem;
+        height: 4.1rem;
+        margin: 0 auto 0.85rem;
+        display: grid;
+        place-items: center;
+        border-radius: 50%;
+        border: 4px solid #ffffff;
+        background: linear-gradient(145deg, #123a65, #0f766e);
+        color: #ffffff;
+        box-shadow: 0 12px 26px rgba(18, 58, 101, 0.2);
+    }
+
+    .user-profile-avatar span {
+        display: block;
+        font-size: 1.45rem;
+        font-weight: 800;
+        line-height: 1;
+    }
+
+    .user-profile-header h1 {
+        margin: 0;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0.35rem;
+        color: #263660;
+        font-size: 1rem;
+        font-weight: 800;
+        line-height: 1.25;
+    }
+
+    .user-profile-check {
+        width: 1rem;
+        height: 1rem;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 50%;
+        background: #1d9bf0;
+        color: #ffffff;
+        font-size: 0.68rem;
+        font-weight: 900;
+    }
+
+    .user-profile-header p {
+        margin: 0.6rem 0 0;
+        color: #9aa6bb;
+        font-size: 0.86rem;
+        overflow-wrap: anywhere;
+    }
+
+    .user-profile-details {
+        margin: 1.7rem 0 0;
+        padding: 1.35rem 0 0;
+        border-top: 1px solid rgba(19, 32, 60, 0.08);
+        display: grid;
+        gap: 1rem;
+    }
+
+    .user-profile-details div {
+        display: grid;
+        grid-template-columns: 6.6rem minmax(0, 1fr);
+        gap: 0.9rem;
+        align-items: center;
+    }
+
+    .user-profile-details dt {
+        color: #aeb8ca;
+        font-size: 0.8rem;
+        font-weight: 600;
+    }
+
+    .user-profile-details dd {
+        margin: 0;
+        color: #526487;
+        font-size: 0.84rem;
+        font-weight: 700;
+        overflow-wrap: anywhere;
+    }
+
+    .user-profile-role {
+        display: inline-flex;
+        align-items: center;
+        min-height: 1.45rem;
+        padding: 0.22rem 0.58rem;
+        border-radius: 999px;
+        background: #ccfbf1;
+        color: #115e59;
+        font-size: 0.76rem;
+        font-weight: 800;
+    }
+
+    @media (max-width: 420px) {
+        .user-profile-card {
+            width: 100%;
+        }
+
+        .user-profile-details div {
+            grid-template-columns: 1fr;
+            gap: 0.25rem;
+        }
+    }
+</style>
+{% endblock %}

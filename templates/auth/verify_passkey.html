@@ -1,20 +1,53 @@
 {% extends "base.html" %}
+{% load static %}
 
 {% block title %}Verify Passkey{% endblock %}
 
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/modern_auth.css' %}">
+{% endblock %}
+
 {% block content %}
-<section class="card auth-card">
-    <h2>Verify with face recognition / biometrics</h2>
-    <p>Use face unlock, fingerprint, Windows Hello, or your saved passkey on this device to continue.</p>
-    <p><strong>Available passkeys:</strong> {{ passkey_count }}</p>
-    <button
-        type="button"
-        class="button primary"
-        id="verify-passkey-button"
-        data-options-url="{% url 'accounts:passkey-auth-options' %}"
-        data-verify-url="{% url 'accounts:passkey-auth-verify' %}">
-        Verify with Face or Biometrics
-    </button>
-    <p class="helper-text">If this device does not support biometrics or passkeys, you may need to set one up first from the dashboard.</p>
-</section>
+<div class="auth-page-wrapper">
+    <section class="mfa-flow-shell">
+        <div class="mfa-intro">
+            <span class="mfa-badge">SecureCloud MFA</span>
+            <h1>Verify Identity</h1>
+            <p>Complete each MFA step in sequence to access your account.</p>
+        </div>
+
+        <section class="mfa-card">
+            {% include "auth/_mfa_progress.html" %}
+
+            <div class="mfa-stage-body">
+                <h3>Passkey Verification</h3>
+                <p>Use your saved passkey, face unlock, fingerprint, or Windows Hello to complete the final login check.</p>
+
+                <div class="mfa-passkey-summary">
+                    <div class="mfa-passkey-stat">
+                        <strong>{{ passkey_count }}</strong>
+                        <span>Passkey{{ passkey_count|pluralize }} available on this account</span>
+                    </div>
+                    <div class="mfa-passkey-stat">
+                        <strong>Device check</strong>
+                        <span>Your browser will prompt you to approve with the device credential.</span>
+                    </div>
+                </div>
+
+                <div class="mfa-form-actions">
+                    <button
+                        type="button"
+                        class="btn-primary"
+                        id="verify-passkey-button"
+                        data-options-url="{% url 'accounts:passkey-auth-options' %}"
+                        data-verify-url="{% url 'accounts:passkey-auth-verify' %}">
+                        Verify with Passkey
+                    </button>
+                </div>
+
+                <p class="helper-text">If this browser does not support passkeys, register one later from the dashboard before requiring it on future sign-ins.</p>
+            </div>
+        </section>
+    </section>
+</div>
 {% endblock %}

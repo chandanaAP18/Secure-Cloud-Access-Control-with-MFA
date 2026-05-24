@@ -6,16 +6,16 @@
 {% block content %}
 <section class="home-banner" id="top">
     <span class="banner-pill">Now Available</span>
-    <p>Sequential multi-factor authentication, role-based access, and activity visibility in one cloud-ready platform.</p>
+    <p>Email OTP, CAPTCHA, text CAPTCHA, image verification, security question, PIN, TOTP, optional passkey, and role-based access in one guided platform.</p>
 </section>
 
-<section class="hero hero-home aws-hero">
+<section class="hero hero-home aws-hero interactive-hero" data-reveal>
     <div class="hero-copy">
         <p class="eyebrow">Secure Identity Platform</p>
         <h2>Protect cloud access with layered authentication and clear control.</h2>
         <p class="hero-lead">
             Secure Cloud Access uses the user's registered email as identity, a website password for sign-in, and a
-            sequential verification chain with email OTP, phone OTP, CAPTCHA, image verification, security question, and PIN before dashboard access.
+            sequential verification chain with email OTP, CAPTCHA, image verification, text CAPTCHA, security question, PIN, authenticator-app TOTP, and optional passkey verification before dashboard access.
         </p>
         <div class="cta-row">
             <a class="button primary" href="{% url 'accounts:register' %}">Get started</a>
@@ -24,70 +24,118 @@
         <div class="hero-meta">
             <span>Built with Django</span>
             <span>Sequential MFA flow</span>
-            <span>Production-ready structure</span>
+            <span>Signup and login protected</span>
         </div>
     </div>
-    <aside class="hero-panel">
-        <div class="mini-console">
+    <aside class="hero-panel security-flow-demo" aria-label="Interactive MFA preview">
+        <div class="security-svg-shell">
+            <svg class="mfa-svg-map" viewBox="0 0 420 260" role="img" aria-label="Interactive multi-factor authentication flow" data-mfa-svg>
+                <defs>
+                    <linearGradient id="mfaLineGradient" x1="0%" y1="0%" x2="100%" y2="0%">
+                        <stop offset="0%" stop-color="#34d399"/>
+                        <stop offset="50%" stop-color="#60a5fa"/>
+                        <stop offset="100%" stop-color="#fbbf24"/>
+                    </linearGradient>
+                    <filter id="mfaGlow" x="-30%" y="-30%" width="160%" height="160%">
+                        <feGaussianBlur stdDeviation="4" result="blur"/>
+                        <feMerge>
+                            <feMergeNode in="blur"/>
+                            <feMergeNode in="SourceGraphic"/>
+                        </feMerge>
+                    </filter>
+                </defs>
+                <path class="mfa-svg-path" d="M66 132 C110 42 172 42 210 132 S310 222 354 132"/>
+                <path class="mfa-svg-pulse" d="M66 132 C110 42 172 42 210 132 S310 222 354 132"/>
+
+                <g class="mfa-svg-node is-active" data-step-index="0" tabindex="0" role="button" aria-label="Password step">
+                    <circle cx="66" cy="132" r="31"/>
+                    <text x="66" y="137">PW</text>
+                    <text class="mfa-svg-caption" x="66" y="184">Password</text>
+                </g>
+                <g class="mfa-svg-node" data-step-index="1" tabindex="0" role="button" aria-label="OTP step">
+                    <circle cx="142" cy="64" r="31"/>
+                    <text x="142" y="69">OTP</text>
+                    <text class="mfa-svg-caption" x="142" y="28">Email OTP</text>
+                </g>
+                <g class="mfa-svg-node" data-step-index="2" tabindex="0" role="button" aria-label="CAPTCHA step">
+                    <circle cx="210" cy="132" r="31"/>
+                    <text x="210" y="137">BOT</text>
+                    <text class="mfa-svg-caption" x="210" y="184">Human Check</text>
+                </g>
+                <g class="mfa-svg-node" data-step-index="3" tabindex="0" role="button" aria-label="PIN step">
+                    <circle cx="286" cy="196" r="31"/>
+                    <text x="286" y="201">PIN</text>
+                    <text class="mfa-svg-caption" x="286" y="244">Private PIN</text>
+                </g>
+                <g class="mfa-svg-node" data-step-index="4" tabindex="0" role="button" aria-label="TOTP step">
+                    <circle cx="354" cy="132" r="31"/>
+                    <text x="354" y="137">APP</text>
+                    <text class="mfa-svg-caption" x="354" y="184">TOTP</text>
+                </g>
+            </svg>
+        </div>
+        <div class="mini-console live-console">
             <div class="console-top">
                 <span></span><span></span><span></span>
+                <strong>secure-session.exe</strong>
             </div>
             <div class="console-body">
-                <div class="console-item">
+                <div class="console-item console-live-status">
                     <label>Sign-in Status</label>
-                    <strong>Protected by MFA</strong>
+                    <strong data-mfa-title>Website password verified</strong>
+                    <div class="signal-bars" aria-hidden="true">
+                        <span></span><span></span><span></span><span></span>
+                    </div>
+                    <p data-mfa-detail>The first checkpoint confirms the user knows their Secure Cloud account password.</p>
                 </div>
-                <div class="console-grid">
-                    <article>
-                        <span>Layer 1</span>
-                        <strong>Website Password</strong>
-                    </article>
-                    <article>
-                        <span>Layer 2</span>
-                        <strong>Email OTP</strong>
-                    </article>
+                <div class="mfa-route" data-mfa-preview>
+                    <button type="button" class="mfa-route-step is-active" data-step-index="0" data-title="Website password verified" data-detail="The first checkpoint confirms the user knows their Secure Cloud account password.">Password</button>
+                    <button type="button" class="mfa-route-step" data-step-index="1" data-title="Email OTP confirmed" data-detail="A short-lived code proves the user controls the registered email address.">OTP</button>
+                    <button type="button" class="mfa-route-step" data-step-index="2" data-title="Human challenge passed" data-detail="CAPTCHA, image, and text checks slow down scripted login attempts.">CAPTCHA</button>
+                    <button type="button" class="mfa-route-step" data-step-index="3" data-title="Private PIN accepted" data-detail="The account PIN adds another knowledge factor before sensitive access is granted.">PIN</button>
+                    <button type="button" class="mfa-route-step" data-step-index="4" data-title="Authenticator code matched" data-detail="A time-based authenticator code completes the strongest login path.">TOTP</button>
                 </div>
                 <div class="console-list">
                     <div><span class="dot dot-green"></span> Email OTP verified</div>
-                    <div><span class="dot dot-blue"></span> Phone OTP verified</div>
-                    <div><span class="dot dot-amber"></span> Question + PIN complete</div>
+                    <div><span class="dot dot-blue"></span> CAPTCHA and image check complete</div>
+                    <div><span class="dot dot-amber"></span> Question, PIN, voice, and TOTP complete</div>
                 </div>
             </div>
         </div>
     </aside>
 </section>
 
-<section class="stats-ribbon compact-ribbon" id="overview">
-    <article class="stat-chip">
+<section class="stats-ribbon compact-ribbon" id="overview" data-reveal>
+    <article class="stat-chip interactive-stat">
         <span>Authentication</span>
-        <strong>4-step MFA</strong>
+        <strong>7-step guided MFA</strong>
     </article>
-    <article class="stat-chip">
+    <article class="stat-chip interactive-stat">
         <span>Access Model</span>
         <strong>Admin + User</strong>
     </article>
-    <article class="stat-chip">
+    <article class="stat-chip interactive-stat">
         <span>Persistence</span>
         <strong>MySQL-ready</strong>
     </article>
-    <article class="stat-chip">
+    <article class="stat-chip interactive-stat">
         <span>Confidence</span>
         <strong>Test-covered</strong>
     </article>
 </section>
 
-<section class="home-section-grid">
-    <article class="card product-card">
+<section class="home-section-grid" data-reveal>
+    <article class="card product-card interactive-card">
         <p class="eyebrow">Security</p>
         <h3>Authentication that adds friction only where it matters.</h3>
         <p>Email identifies the user, the website password authenticates them, and each extra factor adds another checkpoint.</p>
     </article>
-    <article class="card product-card">
+    <article class="card product-card interactive-card">
         <p class="eyebrow">Visibility</p>
         <h3>Dashboards built around who needs to see what.</h3>
         <p>Admins get system activity and user insights. Standard users get their own clean access history and secure entry path.</p>
     </article>
-    <article class="card product-card">
+    <article class="card product-card interactive-card">
         <p class="eyebrow">Scalability</p>
         <h3>Structured for deployment, not just classroom demonstration.</h3>
         <p>Database abstraction, testing, SMTP integration, and app separation keep the project extensible for real hosting.</p>
@@ -103,8 +151,8 @@
             controlled, verified, and recorded.
         </p>
         <ul class="feature-list">
-            <li>Email + website password sign-in</li>
-            <li>Email OTP, phone OTP, CAPTCHA, image verification, security question, and PIN in order</li>
+            <li>Register and login both use the same core MFA family</li>
+            <li>Email OTP, CAPTCHA, image verification, text CAPTCHA, security question, PIN, authenticator-app TOTP, and optional passkey in order</li>
             <li>Role-based navigation and dashboard routing</li>
             <li>OTP expiry, resend cooldown, and activity logging</li>
         </ul>

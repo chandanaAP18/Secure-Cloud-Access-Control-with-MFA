@@ -1,0 +1,35 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}My Dashboard{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/modern_auth.css' %}">
+<style>
+    body { padding: 2rem; }
+    .card { background: white; padding: 2rem; border-radius: 1rem; border: 1px solid #e2e8f0; max-width: 800px; margin: 0 auto; }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="card">
+    <header style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem;">
+        <h1>Welcome back</h1>
+        <a href="{% url 'accounts:logout' %}" class="auth-text-link">Sign Out</a>
+    </header>
+
+    <div class="auth-info-box">
+        <p>Your identity has been verified through all required MFA steps. This device is now trusted.</p>
+    </div>
+
+    <h3>Recent Sign-in Activity</h3>
+    <ul style="list-style: none; padding: 0;">
+        {% for activity in activities %}
+        <li style="padding: 1rem 0; border-top: 1px solid #f1f5f9; display: flex; justify-content: space-between;">
+            <span>{{ activity.detail }}</span>
+            <span style="color: #64748b;">{{ activity.timestamp|date:"M d, H:i" }}</span>
+        </li>
+        {% endfor %}
+    </ul>
+</div>
+{% endblock %}

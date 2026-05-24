@@ -14,10 +14,11 @@ class PublicPageTests(TestCase):
         self.assertContains(response, 'data-voice-target="id_username"')
         self.assertContains(response, 'data-voice-target="id_password"')
         self.assertContains(response, 'data-voice-assistant')
-        self.assertContains(response, "You can type your email or use voice input to fill it automatically.")
-        self.assertContains(response, "the flow can also continue with face unlock, fingerprint, or Windows Hello")
+        self.assertContains(response, "Welcome back")
+        self.assertContains(response, "full verification flow")
 
     def test_register_page_renders(self):
         response = self.client.get(reverse("accounts:register"))
         self.assertEqual(response.status_code, 200)
-        self.assertContains(response, "Create a normal user account")
+        self.assertContains(response, "Build your account in clear steps")
+        self.assertContains(response, "Step 1 of 3")
