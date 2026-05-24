@@ -1,15 +1,53 @@
 {% extends "base.html" %}
+{% load static %}
 
 {% block title %}Verify PIN{% endblock %}
 
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/modern_auth.css' %}">
+{% endblock %}
+
 {% block content %}
-<section class="card auth-card">
-    <h2>Verify with PIN</h2>
-    <p>Enter the 4 to 8 digit PIN you created during registration.</p>
-    <form method="post" class="form-grid">
-        {% csrf_token %}
-        {{ form.as_p }}
-        <button type="submit" class="button primary">Verify PIN</button>
-    </form>
-</section>
+<div class="auth-page-wrapper">
+    <section class="mfa-flow-shell">
+        <div class="mfa-intro">
+            <span class="mfa-badge">SecureCloud MFA</span>
+            <h1>Verify Identity</h1>
+            <p>Complete each MFA step in sequence to access your account.</p>
+        </div>
+
+        <section class="mfa-card">
+            {% include "auth/_mfa_progress.html" %}
+
+            <div class="mfa-stage-body">
+                <h3>PIN Verification</h3>
+                <p>Enter the 4 to 8 digit PIN you created during registration.</p>
+
+                <form method="post" class="mfa-form">
+                    {% csrf_token %}
+                    <div class="mfa-field">
+                        <label for="{{ form.pin.id_for_label }}">{{ form.pin.label }}</label>
+                        <div class="voice-field">
+                            {{ form.pin }}
+                            <button
+                                type="button"
+                                class="voice-button"
+                                data-voice-target="{{ form.pin.id_for_label }}"
+                                data-voice-mode="text"
+                            >
+                                Voice
+                            </button>
+                        </div>
+                        {% if form.pin.errors %}
+                            <div class="field-error">{{ form.pin.errors }}</div>
+                        {% endif %}
+                    </div>
+                    <div class="mfa-form-actions">
+                        <button type="submit" class="btn-primary">Verify PIN</button>
+                    </div>
+                </form>
+            </div>
+        </section>
+    </section>
+</div>
 {% endblock %}

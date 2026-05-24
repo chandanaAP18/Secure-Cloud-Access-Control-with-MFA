@@ -1,0 +1,28 @@
+{% extends "base.html" %}
+
+{% block title %}Upload Document{% endblock %}
+
+{% block content %}
+<!-- MFA-protected page: the view applies mfa_verified_required before rendering. -->
+<section class="card dashboard-section-card">
+    <div class="section-heading">
+        <div>
+            <p class="section-kicker">Secure storage</p>
+            <h2>Upload a document</h2>
+        </div>
+        <a class="button ghost" href="{% url 'accounts:document-dashboard' %}">Back to Documents</a>
+    </div>
+
+    <!-- CSRF protection is required for the local file upload POST. -->
+    <form method="post" enctype="multipart/form-data" class="auth-form">
+        {% csrf_token %}
+        <label for="{{ form.file.id_for_label }}">Choose document</label>
+        {{ form.file }}
+        {% if form.file.errors %}
+            <div class="form-error">{{ form.file.errors }}</div>
+        {% endif %}
+        <p class="helper-text">Files are stored locally and can only be downloaded through the secure document view.</p>
+        <button type="submit" class="button primary">Upload</button>
+    </form>
+</section>
+{% endblock %}

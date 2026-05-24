@@ -1,14 +1,17 @@
 # Secure Cloud Access Control with Multi-Factor Authentication
 
-This project implements the PBL topic from the PDF using Django, HTML/CSS/JavaScript, email OTP verification, and MySQL-ready configuration.
+This project implements the PBL topic from the PDF using Django, HTML/CSS/JavaScript, sequential MFA, authenticator-app TOTP, voice-assisted form input, and MySQL-ready configuration.
 
 ## Features
 
 - User registration with role assignment (`Admin` or `User`)
-- Password-based sign in followed by email OTP verification
+- Password-based sign in followed by sequential MFA verification
 - Role-based dashboards
 - Secure password hashing through Django's auth framework
 - Login activity audit trail with IP address and user-agent capture
+- Authenticator app TOTP with QR setup
+- Voice-assisted navigation and form input on supported browsers
+- Email OTP plus authenticator-app TOTP for practical local MFA
 - MySQL-ready configuration for VS Code/local development
 - Unit, integration, and system-style test coverage
 
@@ -25,7 +28,17 @@ This project implements the PBL topic from the PDF using Django, HTML/CSS/JavaSc
 4. Create an admin user:
    `python manage.py createsuperuser`
 5. Start the app:
-   `python manage.py runserver`
+   `python manage.py runserver localhost:8000`
+
+## Database Visibility
+To see all users and logs in your terminal, run:
+`python manage.py view_db`
+
+## Local voice support
+
+- Browser microphone access for the built-in voice assistant requires a secure context.
+- For local development, run the app with `python manage.py runserver localhost:8000`.
+- Avoid using `0.0.0.0:8000` or a LAN IP like `192.168.x.x` if you want microphone input to work without HTTPS.
 
 ## Real OTP emails
 

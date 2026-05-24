@@ -4,7 +4,7 @@
 {% block body_class %}page-process{% endblock %}
 
 {% block content %}
-<section class="page-hero process-hero" id="journey">
+<section class="page-hero process-hero interactive-process-hero" id="journey" data-reveal>
     <div>
         <p class="eyebrow">How It Works</p>
         <h2>A complete MFA and access-control workflow.</h2>
@@ -15,33 +15,66 @@
         <div class="orbit-node">Email OTP</div>
         <div class="orbit-node">Question</div>
         <div class="orbit-node">PIN</div>
+        <div class="orbit-node">Voice</div>
+        <div class="orbit-node">TOTP</div>
     </div>
 </section>
 
-<section class="timeline">
-    <article class="card">
+<section class="timeline interactive-timeline" data-reveal>
+    <article class="card process-step-card is-selected" tabindex="0" data-process-title="Primary Authentication" data-process-detail="The user enters their registered email and website password. This starts the protected login session.">
         <span class="step-badge">1</span>
-        <h3>Email and website password</h3>
-        <p>The user enters their registered email and the password created for this website. It is not the email account password.</p>
+        <h3>Primary Authentication</h3>
+        <p>The user enters their registered email and website-specific password. This initiates the multi-layered verification chain.</p>
     </article>
-    <article class="card">
+    <article class="card process-step-card" tabindex="0" data-process-title="Email OTP Verification" data-process-detail="A hashed one-time code is sent to the user's email and expires quickly.">
         <span class="step-badge">2</span>
-        <h3>Email OTP delivery</h3>
-        <p>A one-time code is generated, hashed for storage, and sent to the user's email through SMTP.</p>
+        <h3>Email OTP Verification</h3>
+        <p>A hashed one-time code is sent via SMTP. This confirms the user has access to their registered communication channel.</p>
     </article>
-    <article class="card">
+    <article class="card process-step-card" tabindex="0" data-process-title="Bot Resistance Chain" data-process-detail="CAPTCHA, image selection, and text challenge checks make automated login attempts harder.">
         <span class="step-badge">3</span>
-        <h3>Phone OTP, CAPTCHA, and image check</h3>
-        <p>After email OTP, the flow continues through phone OTP, a generated CAPTCHA, and an image-selection challenge to add bot resistance and visual confirmation.</p>
+        <h3>Bot Resistance Chain</h3>
+        <p>A sequence of CAPTCHA, image selection, and text-based challenges prevents automated attacks and ensures human interaction.</p>
     </article>
-    <article class="card">
+    <article class="card process-step-card" tabindex="0" data-process-title="Identity Knowledge" data-process-detail="The security question confirms knowledge configured earlier by the account holder.">
         <span class="step-badge">4</span>
-        <h3>PIN and final routing</h3>
-        <p>The user completes a PIN check, then is routed to the correct role-based dashboard with activity already logged.</p>
+        <h3>Identity Knowledge</h3>
+        <p>A private security question check ensures the user knows specific personal details previously configured for the account.</p>
+    </article>
+    <article class="card process-step-card" tabindex="0" data-process-title="Secure PIN Check" data-process-detail="A numeric PIN adds a fast private checkpoint before higher-trust factors.">
+        <span class="step-badge">5</span>
+        <h3>Secure PIN Check</h3>
+        <p>A numeric Personal Identification Number provides an additional "something you know" layer to the authentication process.</p>
+    </article>
+    <article class="card process-step-card" tabindex="0" data-process-title="Voice Biometrics" data-process-detail="The user speaks a dynamic phrase so the system can compare voice characteristics.">
+        <span class="step-badge">6</span>
+        <h3>Voice Biometrics</h3>
+        <p>The user speaks a dynamic phrase. Voice pattern matching provides "something you are" biometric verification.</p>
+    </article>
+    <article class="card process-step-card" tabindex="0" data-process-title="Authenticator TOTP" data-process-detail="A time-based authenticator app code verifies possession of a trusted device.">
+        <span class="step-badge">7</span>
+        <h3>Authenticator TOTP</h3>
+        <p>A time-based one-time password from a registered authenticator app (like Google Authenticator) adds mobile-based security.</p>
+    </article>
+    <article class="card process-step-card" tabindex="0" data-process-title="Hardware Passkey" data-process-detail="WebAuthn passkeys use device-backed cryptographic proof for strong final assurance.">
+        <span class="step-badge">8</span>
+        <h3>Hardware Passkey</h3>
+        <p>WebAuthn-based cryptographic proof using hardware security keys or device-level biometrics provides the highest level of assurance.</p>
+    </article>
+    <article class="card process-step-card" tabindex="0" data-process-title="Final Secure Routing" data-process-detail="After verification, the user is routed to the correct dashboard and the login event is logged.">
+        <span class="step-badge">9</span>
+        <h3>Final Secure Routing</h3>
+        <p>Upon successful completion of all stages, the user is routed to their role-based dashboard with all activity logged for audit.</p>
     </article>
 </section>
 
-<section class="feature-split">
+<section class="card process-live-panel" data-process-panel data-reveal>
+    <p class="eyebrow">Selected Step</p>
+    <h3 data-process-panel-title>Primary Authentication</h3>
+    <p data-process-panel-detail>The user enters their registered email and website password. This starts the protected login session.</p>
+</section>
+
+<section class="feature-split" data-reveal>
     <article class="card">
         <p class="eyebrow">System Outcome</p>
         <h3>Secure flow, visible stages, fewer blind spots.</h3>
@@ -54,7 +87,9 @@
         <div class="process-line"></div>
         <div class="process-point">Login</div>
         <div class="process-point">OTP Chain</div>
-        <div class="process-point">Question</div>
+        <div class="process-point">Bot Check</div>
+        <div class="process-point">Knowledge</div>
+        <div class="process-point">Biometrics</div>
         <div class="process-point">Dashboard</div>
     </article>
 </section>

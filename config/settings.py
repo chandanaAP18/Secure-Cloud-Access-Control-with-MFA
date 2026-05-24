@@ -38,6 +38,7 @@ INSTALLED_APPS = [
 MIDDLEWARE = [
     "django.middleware.security.SecurityMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",
+    "accounts.middleware.CanonicalLoopbackHostMiddleware",
     "django.middleware.common.CommonMiddleware",
     "django.middleware.csrf.CsrfViewMiddleware",
     "django.contrib.auth.middleware.AuthenticationMiddleware",
@@ -79,6 +80,8 @@ USE_TZ = True
 STATIC_URL = "static/"
 STATICFILES_DIRS = [STATIC_DIR]
 STATIC_ROOT = BASE_DIR / "staticfiles"
+MEDIA_URL = "/media/"
+MEDIA_ROOT = BASE_DIR / "media"
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 AUTH_USER_MODEL = "accounts.User"
@@ -98,6 +101,9 @@ OTP_LENGTH = int(os.getenv("OTP_LENGTH", "6"))
 OTP_TTL_SECONDS = int(os.getenv("OTP_TTL_SECONDS", "300"))
 OTP_MAX_ATTEMPTS = int(os.getenv("OTP_MAX_ATTEMPTS", "5"))
 OTP_RESEND_COOLDOWN_SECONDS = int(os.getenv("OTP_RESEND_COOLDOWN_SECONDS", "60"))
+LOGIN_RATE_LIMIT_WINDOW_SECONDS = int(os.getenv("LOGIN_RATE_LIMIT_WINDOW_SECONDS", "900"))
+LOGIN_RATE_LIMIT_ATTEMPTS = int(os.getenv("LOGIN_RATE_LIMIT_ATTEMPTS", "5"))
+ACCOUNT_LOCK_MINUTES = int(os.getenv("ACCOUNT_LOCK_MINUTES", "15"))
 OTP_EMAIL_SUBJECT = os.getenv("OTP_EMAIL_SUBJECT", "Your Secure Cloud Access OTP")
 OTP_APP_NAME = os.getenv("OTP_APP_NAME", "Secure Cloud Access")
 TOTP_ISSUER = os.getenv("TOTP_ISSUER", OTP_APP_NAME)
@@ -110,9 +116,27 @@ EMAIL_USE_TLS = os.getenv("EMAIL_USE_TLS", "True").lower() == "true"
 EMAIL_USE_SSL = os.getenv("EMAIL_USE_SSL", "False").lower() == "true"
 EMAIL_TIMEOUT = int(os.getenv("EMAIL_TIMEOUT", "20"))
 DEFAULT_FROM_EMAIL = os.getenv("DEFAULT_FROM_EMAIL", EMAIL_HOST_USER or "no-reply@securecloud.local").strip()
-WEBAUTHN_RP_ID = os.getenv("WEBAUTHN_RP_ID", "127.0.0.1")
+TRUSTED_DEVICE_COOKIE_NAME = os.getenv("TRUSTED_DEVICE_COOKIE_NAME", "trusted_device")
+TRUSTED_DEVICE_MAX_AGE = int(os.getenv("TRUSTED_DEVICE_MAX_AGE", str(60 * 60 * 24 * 30)))
+WEBAUTHN_RP_ID = os.getenv("WEBAUTHN_RP_ID", "localhost")
 WEBAUTHN_RP_NAME = os.getenv("WEBAUTHN_RP_NAME", "Secure Cloud Access")
-WEBAUTHN_ORIGIN = os.getenv("WEBAUTHN_ORIGIN", "http://127.0.0.1:8000")
+WEBAUTHN_ORIGIN = os.getenv("WEBAUTHN_ORIGIN", "http://localhost:8000")
+VOICE_BIOMETRIC_BACKEND = os.getenv("VOICE_BIOMETRIC_BACKEND", "classic").strip().lower()
+VOICE_MODEL_SOURCE = os.getenv("VOICE_MODEL_SOURCE", "speechbrain/spkrec-ecapa-voxceleb").strip()
+VOICE_MODEL_CACHE_DIR = os.getenv("VOICE_MODEL_CACHE_DIR", str(BASE_DIR / ".cache" / "speechbrain")).strip()
+VOICE_MODEL_THRESHOLD = float(os.getenv("VOICE_MODEL_THRESHOLD", "0.32"))
+VOICE_CLASSIC_THRESHOLD = float(os.getenv("VOICE_CLASSIC_THRESHOLD", "0.82"))
+VOICE_MIN_DURATION_SECONDS = float(os.getenv("VOICE_MIN_DURATION_SECONDS", "2.0"))
+VOICE_MAX_DURATION_SECONDS = float(os.getenv("VOICE_MAX_DURATION_SECONDS", "8.0"))
+VOICE_MIN_RMS = float(os.getenv("VOICE_MIN_RMS", "0.008"))
+VOICE_MAX_SILENCE_RATIO = float(os.getenv("VOICE_MAX_SILENCE_RATIO", "0.72"))
+VOICE_MAX_CLIPPING_RATIO = float(os.getenv("VOICE_MAX_CLIPPING_RATIO", "0.03"))
+VOICE_MAX_SPOOF_RISK = float(os.getenv("VOICE_MAX_SPOOF_RISK", "0.55"))
+VOICE_CHALLENGE_TTL_SECONDS = int(os.getenv("VOICE_CHALLENGE_TTL_SECONDS", "300"))
+VOICE_CHALLENGE_WORDS = [word.strip() for word in os.getenv(
+    "VOICE_CHALLENGE_WORDS",
+    "secure,cloud,access,control,shield,verify,identity,session,token,system,network,private,account,safety,portal",
+).split(",") if word.strip()]
 
 USE_MYSQL = os.getenv("USE_MYSQL", "False").lower() == "true"
 

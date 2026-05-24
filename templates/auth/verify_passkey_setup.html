@@ -1,0 +1,53 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Set Up Passkey{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/modern_auth.css' %}">
+{% endblock %}
+
+{% block content %}
+<div class="auth-page-wrapper">
+    <section class="mfa-flow-shell">
+        <div class="mfa-intro">
+            <span class="mfa-badge">SecureCloud MFA</span>
+            <h1>Verify Identity</h1>
+            <p>Complete each MFA step in sequence to finish account setup.</p>
+        </div>
+
+        <section class="mfa-card">
+            {% include "auth/_mfa_progress.html" %}
+
+            <div class="mfa-stage-body">
+                <h3>Passkey Setup</h3>
+                <p>Create a passkey on this device so future logins can include the final biometric or device-backed check.</p>
+
+                <div class="mfa-passkey-summary">
+                    <div class="mfa-passkey-stat">
+                        <strong>{{ passkey_count }}</strong>
+                        <span>Passkey{{ passkey_count|pluralize }} currently registered</span>
+                    </div>
+                    <div class="mfa-passkey-stat">
+                        <strong>What happens next</strong>
+                        <span>Your browser will ask you to save a passkey using face unlock, fingerprint, or Windows Hello.</span>
+                    </div>
+                </div>
+
+                <div class="mfa-form-actions">
+                    <button
+                        type="button"
+                        class="btn-primary"
+                        id="register-passkey-button"
+                        data-options-url="{% url 'accounts:passkey-register-options' %}"
+                        data-verify-url="{% url 'accounts:passkey-register-verify' %}">
+                        Create Passkey
+                    </button>
+                </div>
+
+                <p class="helper-text">If your current browser or device does not support passkeys, switch to a supported device to complete this final setup step.</p>
+            </div>
+        </section>
+    </section>
+</div>
+{% endblock %}

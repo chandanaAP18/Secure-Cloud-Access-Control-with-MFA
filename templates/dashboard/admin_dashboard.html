@@ -2,49 +2,185 @@
 
 {% block title %}Admin Dashboard{% endblock %}
 
-{% block content %}
-<section class="dashboard-grid">
-    <article class="metric-card">
-        <span>Total users</span>
-        <strong>{{ user_count }}</strong>
-    </article>
-    <article class="metric-card">
-        <span>Admins</span>
-        <strong>{{ admin_count }}</strong>
-    </article>
-</section>
+{% block extra_css %}
+<style>
+    .login-analytics-card {
+        overflow: hidden !important;
+    }
 
-<section class="card">
-    <h2>Recent logins</h2>
-    <div class="table-wrap">
-        <table>
-            <thead>
-                <tr><th>Email</th><th>Status</th><th>IP</th><th>Time</th></tr>
-            </thead>
-            <tbody>
-                {% for activity in activities %}
-                    <tr>
-                        <td>{{ activity.email }}</td>
-                        <td>{{ activity.get_status_display }}</td>
-                        <td>{{ activity.ip_address|default:"Unknown" }}</td>
-                        <td>{{ activity.created_at }}</td>
-                    </tr>
-                {% empty %}
-                    <tr><td colspan="4">No activity recorded yet.</td></tr>
-                {% endfor %}
-            </tbody>
-        </table>
+    .login-chart-summary {
+        display: grid !important;
+        grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+        gap: 0.9rem !important;
+        margin: 0 0 1.15rem !important;
+    }
+
+    .login-chart-summary article {
+        padding: 1rem 1.1rem !important;
+        border-radius: 0.95rem !important;
+        background: rgba(18, 58, 101, 0.05) !important;
+        border: 1px solid rgba(19, 32, 60, 0.08) !important;
+    }
+
+    .login-chart-summary span {
+        display: block !important;
+        color: var(--muted) !important;
+        font-size: 0.78rem !important;
+        font-weight: 700 !important;
+    }
+
+    .login-chart-summary strong {
+        display: block !important;
+        margin-top: 0.3rem !important;
+        color: var(--ink) !important;
+        font-size: 1.8rem !important;
+        line-height: 1 !important;
+    }
+
+    .login-graph {
+        display: grid !important;
+        grid-template-columns: 2.2rem minmax(0, 1fr) !important;
+        gap: 0.8rem !important;
+        padding: 1rem 1rem 0.85rem 0.65rem !important;
+        border-radius: 1rem !important;
+        background:
+            linear-gradient(to bottom, rgba(19, 32, 60, 0.08) 1px, transparent 1px) 0 1.35rem / 100% 4.35rem,
+            linear-gradient(145deg, rgba(255, 255, 255, 0.98), rgba(248, 251, 255, 0.96)) !important;
+        border: 1px solid rgba(19, 32, 60, 0.08) !important;
+    }
+
+    .login-graph-axis {
+        height: 190px !important;
+        display: flex !important;
+        flex-direction: column !important;
+        justify-content: space-between !important;
+        align-items: flex-end !important;
+        padding: 0.25rem 0 1.65rem !important;
+        color: var(--muted) !important;
+        font-size: 0.72rem !important;
+        font-weight: 700 !important;
+    }
+
+    .login-graph-plot {
+        height: 190px !important;
+        display: grid !important;
+        grid-template-columns: repeat(7, minmax(0, 1fr)) !important;
+        align-items: end !important;
+        gap: 0.8rem !important;
+    }
+
+    .login-graph-column {
+        min-width: 0 !important;
+        height: 100% !important;
+        display: grid !important;
+        grid-template-rows: 1.25rem minmax(0, 1fr) 1.2rem !important;
+        gap: 0.35rem !important;
+        justify-items: center !important;
+    }
+
+    .login-graph-value {
+        color: var(--navy) !important;
+        font-size: 0.76rem !important;
+        font-weight: 800 !important;
+    }
+
+    .login-graph-bar-wrap {
+        width: 100% !important;
+        max-width: 38px !important;
+        height: 100% !important;
+        display: flex !important;
+        align-items: end !important;
+        justify-content: center !important;
+        border-radius: 999px !important;
+        background: rgba(18, 58, 101, 0.06) !important;
+        overflow: hidden !important;
+    }
+
+    .login-graph-bar {
+        display: block !important;
+        width: 100% !important;
+        height: var(--bar-height) !important;
+        min-height: 0 !important;
+        border-radius: 999px 999px 0 0 !important;
+        background: linear-gradient(180deg, #20c997, var(--navy)) !important;
+        box-shadow: 0 14px 24px rgba(15, 118, 110, 0.2) !important;
+    }
+
+    .login-graph-day {
+        color: var(--muted) !important;
+        font-size: 0.74rem !important;
+        font-weight: 800 !important;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<section class="dashboard-hero admin-hero">
+    <div class="dashboard-hero-copy">
+        <p class="eyebrow">Admin Control Room</p>
+        <h2>Monitor users and access health</h2>
+        <p>Review account growth, privileged users, unusual-login counts, and lock events from one dashboard.</p>
+    </div>
+    <div class="dashboard-grid dashboard-metric-grid">
+        <article class="metric-card">
+            <span>Total users</span>
+            <strong>{{ user_count }}</strong>
+        </article>
+        <article class="metric-card">
+            <span>Admins</span>
+            <strong>{{ admin_count }}</strong>
+        </article>
+        <article class="metric-card">
+            <span>Standard users</span>
+            <strong>{{ standard_user_count }}</strong>
+        </article>
+        <article class="metric-card">
+            <span>Unusual logins</span>
+            <strong>{{ unusual_event_count }}</strong>
+        </article>
+        <article class="metric-card">
+            <span>Lock events</span>
+            <strong>{{ locked_event_count }}</strong>
+        </article>
     </div>
 </section>
 
-<section class="card">
-    <h2>Latest registrations</h2>
-    <ul class="plain-list">
-        {% for member in users %}
-            <li>{{ member.email }} - {{ member.get_role_display }}</li>
-        {% empty %}
-            <li>No users found.</li>
-        {% endfor %}
-    </ul>
+<section class="card dashboard-section-card login-analytics-card">
+    <div class="section-heading">
+        <div>
+            <p class="section-kicker">Analytics</p>
+            <h2>Login analytics</h2>
+        </div>
+        <span class="status-pill is-outline">{{ login_chart_total }} login{{ login_chart_total|pluralize }} in 7 days</span>
+    </div>
+    <div class="login-chart-summary">
+        <article>
+            <span>Total Logins</span>
+            <strong>{{ login_chart_total }}</strong>
+        </article>
+        <article>
+            <span>Peak Day</span>
+            <strong>{{ login_chart_peak }}</strong>
+        </article>
+    </div>
+    <div class="login-graph" aria-label="Successful logins over the last 7 days">
+        <div class="login-graph-axis" aria-hidden="true">
+            <span>{{ login_chart_peak }}</span>
+            <span>{% widthratio login_chart_peak 2 1 %}</span>
+            <span>0</span>
+        </div>
+        <div class="login-graph-plot">
+            {% for item in login_chart %}
+                <div class="login-graph-column">
+                    <span class="login-graph-value">{{ item.count }}</span>
+                    <div class="login-graph-bar-wrap">
+                        <span class="login-graph-bar" style="--bar-height: {{ item.height }}%;"></span>
+                    </div>
+                    <span class="login-graph-day" title="{{ item.label }}">{{ item.short_label }}</span>
+                </div>
+            {% endfor %}
+        </div>
+    </div>
+    <p class="helper-text">Shows successful sign-ins across all users. Full activity details remain in the logs section.</p>
 </section>
 {% endblock %}

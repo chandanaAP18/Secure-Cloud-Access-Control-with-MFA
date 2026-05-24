@@ -1,0 +1,66 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Verify Voice{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/modern_auth.css' %}">
+{% endblock %}
+
+{% block content %}
+<div class="auth-page-wrapper">
+    <section class="mfa-flow-shell">
+        <div class="mfa-intro">
+            <span class="mfa-badge">SecureCloud MFA</span>
+            <h1>Verify Identity</h1>
+            <p>Complete each MFA step in sequence to access your account.</p>
+        </div>
+
+        <section class="mfa-card">
+            {% include "auth/_mfa_progress.html" %}
+
+            <div class="mfa-stage-body">
+                <h3>Voice Verification</h3>
+                <p>Speak the challenge phrase clearly, then submit the recording so the server can compare it against your enrolled voice profile.</p>
+
+                <div class="mfa-note-card voice-auth-card" data-voice-auth data-voice-mode="verify">
+                    <strong>Speak this phrase</strong>
+                    <p class="voice-auth-phrase">{{ expected_phrase }}</p>
+                    <div class="voice-auth-actions">
+                        <button type="button" class="btn-secondary voice-record-button" data-voice-record>Record Voice Sample</button>
+                        <span class="voice-record-status" data-voice-status>Waiting for your recording.</span>
+                    </div>
+                </div>
+
+                <form method="post" class="mfa-form" enctype="multipart/form-data">
+                    {% csrf_token %}
+                    <div class="mfa-field">
+                        <label for="{{ form.spoken_phrase.id_for_label }}">Challenge phrase</label>
+                        {{ form.spoken_phrase }}
+                        <p class="helper-text">If speech recognition is unavailable, type the exact phrase shown above after recording.</p>
+                        {% if form.spoken_phrase.errors %}
+                            <div class="field-error">{{ form.spoken_phrase.errors }}</div>
+                        {% endif %}
+                    </div>
+                    <div class="mfa-field">
+                        <label for="{{ form.audio_file.id_for_label }}">Voice recording</label>
+                        {{ form.audio_file }}
+                        {% if form.audio_file.help_text %}
+                            <p class="helper-text">{{ form.audio_file.help_text }}</p>
+                        {% endif %}
+                        {% if form.audio_file.errors %}
+                            <div class="field-error">{{ form.audio_file.errors }}</div>
+                        {% endif %}
+                    </div>
+                    {% if voice_quality and voice_quality.reasons %}
+                        <div class="field-error">{{ voice_quality.reasons|join:" " }}</div>
+                    {% endif %}
+                    <div class="mfa-form-actions">
+                        <button type="submit" class="btn-primary">Verify Voice</button>
+                    </div>
+                </form>
+            </div>
+        </section>
+    </section>
+</div>
+{% endblock %}

@@ -1,15 +1,54 @@
 {% extends "base.html" %}
+{% load static %}
 
 {% block title %}Verify Security Question{% endblock %}
 
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/modern_auth.css' %}">
+{% endblock %}
+
 {% block content %}
-<section class="card auth-card">
-    <h2>Answer your security question</h2>
-    <p>{{ question }}</p>
-    <form method="post" class="form-grid">
-        {% csrf_token %}
-        {{ form.as_p }}
-        <button type="submit" class="button primary">Verify Answer</button>
-    </form>
-</section>
+<div class="auth-page-wrapper">
+    <section class="mfa-flow-shell">
+        <div class="mfa-intro">
+            <span class="mfa-badge">SecureCloud MFA</span>
+            <h1>Verify Identity</h1>
+            <p>Complete each MFA step in sequence to access your account.</p>
+        </div>
+
+        <section class="mfa-card">
+            {% include "auth/_mfa_progress.html" %}
+
+            <div class="mfa-stage-body">
+                <h3>Security Question</h3>
+                <p>Answer the question you saved during account setup.</p>
+                <div class="mfa-question">{{ question }}</div>
+
+                <form method="post" class="mfa-form">
+                    {% csrf_token %}
+                    <div class="mfa-field">
+                        <label for="{{ form.answer.id_for_label }}">{{ form.answer.label }}</label>
+                        <div class="voice-field">
+                            {{ form.answer }}
+                            <button
+                                type="button"
+                                class="voice-button"
+                                data-voice-target="{{ form.answer.id_for_label }}"
+                                data-voice-mode="text"
+                            >
+                                Voice
+                            </button>
+                        </div>
+                        {% if form.answer.errors %}
+                            <div class="field-error">{{ form.answer.errors }}</div>
+                        {% endif %}
+                    </div>
+                    <div class="mfa-form-actions">
+                        <button type="submit" class="btn-primary">Verify Answer</button>
+                    </div>
+                </form>
+            </div>
+        </section>
+    </section>
+</div>
 {% endblock %}

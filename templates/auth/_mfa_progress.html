@@ -1,0 +1,21 @@
+<div class="mfa-progress-shell">
+    <div class="mfa-progress-head">
+        <span class="mfa-progress-kicker">Step {{ mfa_current_index }} of {{ mfa_total_steps }}</span>
+        <strong>{{ mfa_heading }}</strong>
+        <p>{{ mfa_subheading }}</p>
+    </div>
+    <div class="mfa-stepper" aria-label="Multi-factor authentication progress">
+        {% for step in mfa_steps %}
+            <div class="mfa-step mfa-step-{{ step.state }}">
+                <div class="mfa-step-node">
+                    {% if step.state == "complete" %}
+                        <span>&#10003;</span>
+                    {% else %}
+                        <span>{{ step.index }}</span>
+                    {% endif %}
+                </div>
+                <span class="mfa-step-label">{{ step.label }}</span>
+            </div>
+        {% endfor %}
+    </div>
+</div>

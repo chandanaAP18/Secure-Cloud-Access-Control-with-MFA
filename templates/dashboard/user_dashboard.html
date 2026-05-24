@@ -2,57 +2,285 @@
 
 {% block title %}User Dashboard{% endblock %}
 
+{% block extra_css %}
+<style>
+    .login-analytics-card {
+        overflow: hidden !important;
+    }
+
+    .login-chart-summary {
+        display: grid !important;
+        grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+        gap: 0.9rem !important;
+        margin: 0 0 1.15rem !important;
+    }
+
+    .login-chart-summary article {
+        padding: 1rem 1.1rem !important;
+        border-radius: 0.95rem !important;
+        background: rgba(18, 58, 101, 0.05) !important;
+        border: 1px solid rgba(19, 32, 60, 0.08) !important;
+    }
+
+    .login-chart-summary span {
+        display: block !important;
+        color: var(--muted) !important;
+        font-size: 0.78rem !important;
+        font-weight: 700 !important;
+    }
+
+    .login-chart-summary strong {
+        display: block !important;
+        margin-top: 0.3rem !important;
+        color: var(--ink) !important;
+        font-size: 1.8rem !important;
+        line-height: 1 !important;
+    }
+
+    .login-graph {
+        display: grid !important;
+        grid-template-columns: 2.2rem minmax(0, 1fr) !important;
+        gap: 0.8rem !important;
+        padding: 1rem 1rem 0.85rem 0.65rem !important;
+        border-radius: 1rem !important;
+        background:
+            linear-gradient(to bottom, rgba(19, 32, 60, 0.08) 1px, transparent 1px) 0 1.35rem / 100% 4.35rem,
+            linear-gradient(145deg, rgba(255, 255, 255, 0.98), rgba(248, 251, 255, 0.96)) !important;
+        border: 1px solid rgba(19, 32, 60, 0.08) !important;
+    }
+
+    .login-graph-axis {
+        height: 190px !important;
+        display: flex !important;
+        flex-direction: column !important;
+        justify-content: space-between !important;
+        align-items: flex-end !important;
+        padding: 0.25rem 0 1.65rem !important;
+        color: var(--muted) !important;
+        font-size: 0.72rem !important;
+        font-weight: 700 !important;
+    }
+
+    .login-graph-plot {
+        height: 190px !important;
+        display: grid !important;
+        grid-template-columns: repeat(7, minmax(0, 1fr)) !important;
+        align-items: end !important;
+        gap: 0.8rem !important;
+    }
+
+    .login-graph-column {
+        min-width: 0 !important;
+        height: 100% !important;
+        display: grid !important;
+        grid-template-rows: 1.25rem minmax(0, 1fr) 1.2rem !important;
+        gap: 0.35rem !important;
+        justify-items: center !important;
+    }
+
+    .login-graph-value {
+        color: var(--navy) !important;
+        font-size: 0.76rem !important;
+        font-weight: 800 !important;
+    }
+
+    .login-graph-bar-wrap {
+        width: 100% !important;
+        max-width: 38px !important;
+        height: 100% !important;
+        display: flex !important;
+        align-items: end !important;
+        justify-content: center !important;
+        border-radius: 999px !important;
+        background: rgba(18, 58, 101, 0.06) !important;
+        overflow: hidden !important;
+    }
+
+    .login-graph-bar {
+        display: block !important;
+        width: 100% !important;
+        height: var(--bar-height) !important;
+        min-height: 0 !important;
+        border-radius: 999px 999px 0 0 !important;
+        background: linear-gradient(180deg, #20c997, var(--navy)) !important;
+        box-shadow: 0 14px 24px rgba(15, 118, 110, 0.2) !important;
+    }
+
+    .login-graph-day {
+        color: var(--muted) !important;
+        font-size: 0.74rem !important;
+        font-weight: 800 !important;
+    }
+</style>
+{% endblock %}
+
 {% block content %}
-<section class="card">
-    <h2>Welcome, {{ user.first_name|default:user.email }}</h2>
-    <p>Your account is protected with password hashing, sequential MFA, authenticator app support, audit logging, and optional face recognition or passkey-based biometrics.</p>
-</section>
-
-<section class="card">
-    <h2>Authenticator App TOTP</h2>
-    {% if user.totp_enabled %}
-        <p>Authenticator app TOTP is enabled for this account.</p>
-    {% else %}
-        <p>Set up Google Authenticator, Microsoft Authenticator, or another TOTP app as an additional login factor.</p>
-        <a class="button primary" href="{% url 'accounts:setup-totp' %}">Set up Authenticator App</a>
-    {% endif %}
-</section>
-
-<section class="card">
-    <h2>Face Recognition / Biometrics</h2>
-    <p>Set up a passkey to use device biometrics like face unlock, fingerprint, or Windows Hello as an additional login factor.</p>
-    <p><strong>Registered passkeys:</strong> {{ user.passkeys.count }}</p>
-    <button
-        type="button"
-        class="button primary"
-        id="register-passkey-button"
-        data-options-url="{% url 'accounts:passkey-register-options' %}"
-        data-verify-url="{% url 'accounts:passkey-register-verify' %}">
-        Add Face / Biometric Login
-    </button>
-    <p class="helper-text">Passkeys work on supported browsers and devices only.</p>
-</section>
-
-<section class="card">
-    <h2>Your recent access history</h2>
-    <div class="table-wrap">
-        <table>
-            <thead>
-                <tr><th>Status</th><th>IP</th><th>Time</th><th>Detail</th></tr>
-            </thead>
-            <tbody>
-                {% for activity in page_obj %}
-                    <tr>
-                        <td>{{ activity.get_status_display }}</td>
-                        <td>{{ activity.ip_address|default:"Unknown" }}</td>
-                        <td>{{ activity.created_at }}</td>
-                        <td>{{ activity.detail }}</td>
-                    </tr>
-                {% empty %}
-                    <tr><td colspan="4">No activity found.</td></tr>
-                {% endfor %}
-            </tbody>
-        </table>
+<section class="dashboard-hero">
+    <div class="dashboard-hero-copy">
+        <p class="eyebrow">Account Center</p>
+        <h2>Welcome, {{ user.first_name|default:user.email }}</h2>
+        <p>Your account is protected with password hashing, sequential MFA, text and image verification checks, voice verification, authenticator app support, and audit logging.</p>
+        <div class="dashboard-badges">
+            <span>{% if user.totp_enabled %}Authenticator ready{% else %}Authenticator pending{% endif %}</span>
+            <span>{% if user.voice_enabled %}Voice ID ready{% else %}Voice ID pending{% endif %}</span>
+            <span>{{ trusted_devices|length }} trusted device{{ trusted_devices|length|pluralize }}</span>
+        </div>
+    </div>
+    <div class="dashboard-hero-panel">
+        <div class="dashboard-spotlight">
+            <span class="dashboard-spotlight-label">Security posture</span>
+            <strong>
+                {% if user.totp_enabled %}
+                    Strong multi-factor coverage
+                {% else %}
+                    Add authenticator setup to strengthen sign-in
+                {% endif %}
+            </strong>
+            <p>Each login moves through password, OTP, CAPTCHA, image, text verification, question, PIN, voice verification, and authenticator confirmation.</p>
+        </div>
     </div>
 </section>
+
+<section class="dashboard-shell">
+    <div class="dashboard-primary">
+        <section class="card dashboard-section-card login-analytics-card">
+            <div class="section-heading">
+                <div>
+                    <p class="section-kicker">Analytics</p>
+                    <h2>Your login analytics</h2>
+                </div>
+                <span class="status-pill is-outline">{{ login_chart_total }} login{{ login_chart_total|pluralize }} in 7 days</span>
+            </div>
+            <div class="login-chart-summary">
+                <article>
+                    <span>Total Logins</span>
+                    <strong>{{ login_chart_total }}</strong>
+                </article>
+                <article>
+                    <span>Peak Day</span>
+                    <strong>{{ login_chart_peak }}</strong>
+                </article>
+            </div>
+            <div class="login-graph" aria-label="Your successful logins over the last 7 days">
+                <div class="login-graph-axis" aria-hidden="true">
+                    <span>{{ login_chart_peak }}</span>
+                    <span>{% widthratio login_chart_peak 2 1 %}</span>
+                    <span>0</span>
+                </div>
+                <div class="login-graph-plot">
+                    {% for item in login_chart %}
+                        <div class="login-graph-column">
+                            <span class="login-graph-value">{{ item.count }}</span>
+                            <div class="login-graph-bar-wrap">
+                                <span class="login-graph-bar" style="--bar-height: {{ item.height }}%;"></span>
+                            </div>
+                            <span class="login-graph-day" title="{{ item.label }}">{{ item.short_label }}</span>
+                        </div>
+                    {% endfor %}
+                </div>
+            </div>
+            <p class="helper-text">Shows your successful sign-ins. Full activity details remain in the logs section.</p>
+        </section>
+
+        <section class="card dashboard-section-card">
+            <div class="section-heading">
+                <div>
+                    <p class="section-kicker">Authentication</p>
+                    <h2>Authenticator App TOTP</h2>
+                </div>
+                <span class="status-pill {% if user.totp_enabled %}is-live{% else %}is-muted{% endif %}">
+                    {% if user.totp_enabled %}Enabled{% else %}Not enabled{% endif %}
+                </span>
+            </div>
+            {% if user.totp_enabled %}
+                <p>Authenticator app TOTP is enabled for this account and will be added to your verification queue during sign-in.</p>
+            {% else %}
+                <p>Set up Google Authenticator, Microsoft Authenticator, or another TOTP app as an additional login factor.</p>
+                <a class="button primary" href="{% url 'accounts:setup-totp' %}">Set up Authenticator App</a>
+            {% endif %}
+        </section>
+
+        <section class="card dashboard-section-card">
+            <div class="section-heading">
+                <div>
+                    <p class="section-kicker">Device security</p>
+                    <h2>Passkey</h2>
+                </div>
+                <span class="status-pill {% if user.passkeys.count %}is-live{% else %}is-muted{% endif %}">
+                    {{ user.passkeys.count }} registered
+                </span>
+            </div>
+            <p>Register a passkey to use face unlock, fingerprint, or Windows Hello as the final factor during login.</p>
+            <button
+                type="button"
+                class="button primary"
+                id="register-passkey-button"
+                data-options-url="{% url 'accounts:passkey-register-options' %}"
+                data-verify-url="{% url 'accounts:passkey-register-verify' %}">
+                Add Passkey
+            </button>
+            <p class="helper-text">Passkeys work only on supported browsers and devices.</p>
+        </section>
+
+    </div>
+
+    <aside class="dashboard-sidebar">
+        <section class="card dashboard-section-card dashboard-callout">
+            <p class="section-kicker">Voice access</p>
+            <h2>Microphone requirement</h2>
+            <p>Browser voice features need a secure context. For local development, use <code>python manage.py runserver localhost:8000</code> instead of your LAN IP.</p>
+        </section>
+
+        <section class="card dashboard-section-card">
+            <p class="section-kicker">Quick view</p>
+            <ul class="dashboard-checklist">
+                <li>Password authentication is active.</li>
+                <li>Email OTP is always part of sign-in.</li>
+                <li>Trusted devices are remembered after a full successful login.</li>
+                <li>Visual checks and audit logging are enabled.</li>
+                <li>Unusual logins are flagged when the device or IP changes.</li>
+            </ul>
+        </section>
+
+        <section class="card dashboard-section-card">
+            <p class="section-kicker">Trusted devices</p>
+            <ul class="plain-list dashboard-user-list">
+                {% for device in trusted_devices %}
+                    <li>
+                        <strong>{{ device.device_name }}</strong>
+                        <span>{{ device.location_label|default:"Unknown network" }} • {{ device.last_ip_address|default:"Unknown IP" }}</span>
+                    </li>
+                {% empty %}
+                    <li>
+                        <strong>No trusted devices yet</strong>
+                        <span>Your current browser will be remembered after a full successful sign-in.</span>
+                    </li>
+                {% endfor %}
+            </ul>
+        </section>
+    </aside>
+</section>
+
+<section class="card dashboard-section-card">
+    <div class="section-heading">
+        <div>
+            <p class="section-kicker">Security alerts</p>
+            <h2>Recent unusual login detections</h2>
+        </div>
+    </div>
+    <ul class="plain-list dashboard-user-list">
+        {% for activity in recent_alerts %}
+            <li>
+                <strong>{{ activity.device_name|default:"Unknown device" }}</strong>
+                <span>{{ activity.location_label|default:"Unknown network" }} • {{ activity.created_at }}</span>
+            </li>
+        {% empty %}
+            <li>
+                <strong>No unusual logins flagged recently</strong>
+                <span>Known devices and familiar networks will appear here only when something changes.</span>
+            </li>
+        {% endfor %}
+    </ul>
+</section>
+
 {% endblock %}
