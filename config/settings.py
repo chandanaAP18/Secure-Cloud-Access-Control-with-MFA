@@ -23,6 +23,7 @@ load_env_file(ENV_FILE)
 SECRET_KEY = os.getenv("DJANGO_SECRET_KEY", "django-insecure-dev-key-change-me")
 DEBUG = os.getenv("DJANGO_DEBUG", "True").lower() == "true"
 ALLOWED_HOSTS = [host.strip() for host in os.getenv("DJANGO_ALLOWED_HOSTS", "127.0.0.1,localhost").split(",") if host.strip()]
+ALLOWED_HOSTS += ["healthcheck.railway.app"]
 
 INSTALLED_APPS = [
     "django.contrib.admin",
